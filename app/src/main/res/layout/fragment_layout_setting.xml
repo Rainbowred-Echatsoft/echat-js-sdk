@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@android:id/text1"
+            style="@style/FragmentTextviewTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="设置" />
+
+        <LinearLayout
+            style="@style/SettingItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/SettingItemTextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="token:"
+                android:textColor="#000" />
+
+            <EditText
+                android:id="@+id/edit_token"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/SettingItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/SettingItemTextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="appid:"
+                android:textColor="#000" />
+
+            <EditText
+                android:id="@+id/edit_appid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:singleLine="true" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/SettingItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/SettingItemTextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="encodingKey:"
+                android:textColor="#000" />
+
+            <EditText
+                android:id="@+id/edit_encodingKey"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:singleLine="true" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            style="@style/SettingItem"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/SettingItemTextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="平台id:"
+                android:textColor="#000" />
+
+            <EditText
+                android:id="@+id/edit_platform"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="number" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/SettingItem"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/SettingItemTextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="商户1 id:"
+                android:textColor="#000" />
+
+            <EditText
+                android:id="@+id/edit_bus1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="number" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/SettingItem"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/SettingItemTextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="商户2 id:"
+                android:textColor="#000" />
+
+            <EditText
+                android:id="@+id/edit_bus2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="number" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/SettingItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvDevicetoken"
+                style="@style/SettingItemTextview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/btn_save"
+            style="@style/EChatButton.Item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="保存" />
+
+
+    </LinearLayout>
+</ScrollView>

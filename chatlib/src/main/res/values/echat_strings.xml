@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="continue_open">继续</string>
+    <string name="ssl_error">SSL证书错误。</string>
+    <string name="ssl_error_not_trust">SSL证书颁发机构未受信任。</string>
+    <string name="ssl_error_expired">SSL证书已过期。</string>
+    <string name="ssl_error_mismatch">SSL安全证书域名与网站网址不一致。</string>
+    <string name="ssl_error_not_valid">SSL证书还未生效。</string>
+    <string name="ssl_error_continue_open">是否继续打开该网页?</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">cancel</string>
+
+    <!-- 权限处理 -->
+    <string name="permission_rationale_message">You have rejected us to apply for authorization, please agree to authorization, otherwise the function can\'t be used normally!</string>
+    <string name="permission_denied_forever_message">We need some of the permissions you rejected or the system failed to apply failed, please manually set to the page authorize, otherwise the function can\'t be used normally!</string>
+
+</resources>

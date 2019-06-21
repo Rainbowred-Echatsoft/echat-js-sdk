@@ -1,0 +1,63 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.github.echat.chat">
+
+    <uses-sdk tools:overrideLibrary="tv.danmaku.ijk.media.player_arm64" />
+
+    <!--Android 8.0 注册静态广播接受 必须设置权限/packageName 才能收到消息-->
+    <!-- 声明接收权限 -->
+    <permission
+        android:name="com.echat.chat.RECEIVE_PERMISSION"
+        android:protectionLevel="signature" />
+    <!-- 使用发送权限 -->
+    <uses-permission
+        android:name="com.echat.chat.SEND_PERMISSION"
+        android:protectionLevel="signature" />
+
+    <!-- 声明发送权限 -->
+    <permission
+        android:name="com.echat.chat.SEND_PERMISSION"
+        android:protectionLevel="signature" />
+    <!-- 使用接收权限 -->
+    <uses-permission
+        android:name="com.echat.chat.RECEIVE_PERMISSION"
+        android:protectionLevel="signature" />
+
+    <application>
+
+        <activity
+            android:name="com.github.echat.chat.EChatActivity"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop"
+            android:theme="@style/EChatTheme.NoActionBar" />
+        <activity
+            android:name="com.github.echat.chat.otherui.CameraActivity"
+            android:theme="@style/EChatTheme.NoActionBar" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            tools:replace="name,authorities,exported,grantUriPermissions">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/echat_file_paths_public"
+                tools:replace="name,resource" />
+        </provider>
+
+        <activity
+            android:name=".otherui.BrowserActivity"
+            android:launchMode="singleTop"
+            android:process=":webview"
+            android:screenOrientation="portrait"
+            android:theme="@style/EChatTheme.NoActionBar.OtherProcess" />
+
+
+        <activity
+            android:name=".otherui.WebviewBottomDialogActivity"
+            android:launchMode="singleTop"
+            android:process=":webview"
+            android:theme="@style/EChatTheme.Translucent" />
+    </application>
+</manifest>

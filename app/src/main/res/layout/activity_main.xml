@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
@@ -21,26 +21,22 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/activity_material_design"
+
+    <com.github.echatmulti.sample.ui.NoTouchViewPager
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_marginBottom="48dp" />
 
-        <com.github.echatmulti.sample.ui.NoTouchViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="48dp"
-            android:layout_above="@+id/bottomFab" />
+    <me.majiajie.pagerbottomtabstrip.PageNavigationView
+        android:id="@+id/bottomFab"
+        android:layout_width="match_parent"
+        android:layout_height="68dp"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/transparent"
+        app:layout_behavior="com.github.echatmulti.sample.ui.BottomViewBehavior"
+        />
 
-        <me.majiajie.pagerbottomtabstrip.PageNavigationView
-            android:id="@+id/bottomFab"
-            android:layout_width="match_parent"
-            android:layout_height="68dp"
-            android:layout_alignParentBottom="true"
-            android:background="@android:color/transparent" />
-    </RelativeLayout>
 
-</android.support.constraint.ConstraintLayout>
+</android.support.design.widget.CoordinatorLayout>

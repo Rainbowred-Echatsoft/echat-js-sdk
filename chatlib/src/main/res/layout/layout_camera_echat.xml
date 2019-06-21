@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:showIn="@layout/layout_camera_echat">
+
+        <com.echat.cameralibrary.JCameraView
+            android:id="@+id/jcameraview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:duration_max="10000"
+            app:iconLeft="@drawable/echat_ic_back_white"
+            app:iconMargin="20dp"
+            app:iconSize="30dp"
+            app:iconSrc="@drawable/ic_echat_camera" />
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

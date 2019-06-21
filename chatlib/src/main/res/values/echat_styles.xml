@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+
+    <!-- Base application theme. -->
+    <style name="EChatTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/echatColorPrimary</item>
+        <item name="colorPrimaryDark">@color/echatColorPrimaryDark</item>
+        <item name="colorAccent">@color/echatColorAccent</item>
+        <item name="android:actionButtonStyle">@style/ActionButtonStyle</item>
+    </style>
+
+    <!--Toolbar 右侧关闭对话按钮 离边上的举例-->
+    <style name="ActionButtonStyle" parent="Widget.AppCompat.Light.ActionButton">
+        <item name="android:paddingRight">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+    </style>
+
+    <style name="EChatTheme.NoActionBar" parent="EChatTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="EChatTheme.AppBarOverlay.BLACK" parent="EChatTheme.AppBarOverlay">
+        <item name="android:textColorPrimary">@android:color/black</item>
+        <item name="actionMenuTextColor">@android:color/black</item>
+    </style>
+
+    <style name="EChatTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="EChatTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark" >
+    </style>
+
+    <style name="EChatTheme.NoActionBar.OtherProcess">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <!--直接不显示-->
+    <style name="EChatTheme.Translucent" parent="EChatTheme.NoActionBar">
+        <item name="android:windowBackground">@color/echat_transparent_background</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
+    <style name="EChatBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <!-- 图片选择器主题-->
+    <style name="Matisse.Custom" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/echatColorPrimary</item>
+        <item name="colorPrimaryDark">@color/echatColorPrimaryDark</item>
+        <item name="toolbar">@style/EChatTheme.AppBarOverlay.BLACK</item>
+        <item name="album.dropdown.title.color">@color/custom_album_dropdown_title_text</item>
+        <item name="album.dropdown.count.color">@color/custom_album_dropdown_count_text</item>
+        <item name="album.element.color">@android:color/black</item>
+        <item name="album.thumbnail.placeholder">@color/zhihu_album_dropdown_thumbnail_placeholder</item>
+        <item name="album.emptyView">@drawable/ic_empty_zhihu</item>
+        <item name="album.emptyView.textColor">@color/dracula_album_empty_view</item>
+        <item name="item.placeholder">@color/zhihu_item_placeholder</item>
+        <item name="item.checkCircle.backgroundColor">@color/zhihu_item_checkCircle_backgroundColor</item>
+        <item name="item.checkCircle.borderColor">@color/zhihu_item_checkCircle_borderColor</item>
+        <item name="page.bg">@color/zhihu_page_bg</item>
+        <item name="bottomToolbar.bg">@color/zhihu_bottom_toolbar_bg</item>
+        <item name="bottomToolbar.preview.textColor">@color/custom_bottom_toolbar_preview</item>
+        <item name="bottomToolbar.apply.textColor">@color/custom_bottom_toolbar_apply</item>
+        <item name="preview.bottomToolbar.back.textColor">@color/zhihu_preview_bottom_toolbar_back_text</item>
+        <item name="preview.bottomToolbar.apply.textColor">@color/zhihu_preview_bottom_toolbar_apply</item>
+        <item name="android:listPopupWindowStyle">@style/Popup.Custom</item>
+        <item name="listPopupWindowStyle">@style/Popup.Custom</item>
+        <item name="capture.textColor">@color/custom_capture_textColor</item>
+    </style>
+
+
+    <style name="Popup.Custom" parent="Widget.AppCompat.ListPopupWindow">
+        <item name="android:popupBackground">@color/zhihu_album_popup_bg</item>
+    </style>
+
+</resources>

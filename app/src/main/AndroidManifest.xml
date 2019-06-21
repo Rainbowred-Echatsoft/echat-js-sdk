@@ -5,7 +5,6 @@
 
     <uses-sdk tools:overrideLibrary="com.huawei.android.hms.base,com.huawei.android.hms.push,org.android.agoo.huawei,tv.danmaku.ijk.media.player_arm64" />
 
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -14,7 +13,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -24,25 +22,61 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+
+    <!-- SDK权限 -->
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="${APP_LOGO_PATH}"
         android:label="${app_name}"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="${APP_LOGO_ROUND_PATH}"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup,android:label">
+
+        <meta-data
+            android:name="com.huawei.hms.client.appid"
+            android:value="${HUAWEI_PUSH}" />
         <activity
-            android:name=".MainActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".HandleMessageActivity"
+            android:label="@string/title_activity_handle_message"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <activity
+            android:name=".InitActivity"
+            android:theme="@style/AppTheme.NoActionBar.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <activity
+            android:name="com.echat.echatjsdemo.MiPushActivity"
+            android:exported="true"
+            android:launchMode="singleTask" />
+
+        <receiver
+            android:name=".utils.NotificationReceiver"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="com.echat.chat.SEND_PERMISSION">
+            <intent-filter>
+                <action android:name="com.echat.chat.action.NEW_MSG" />
+                <action android:name="com.echat.chat.action.UNREAD_COUNT" />
+            </intent-filter>
+        </receiver>
+
+
     </application>
 
 </manifest>

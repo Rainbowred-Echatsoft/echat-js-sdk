@@ -28,13 +28,9 @@ public class SettingFragment extends BaseLazyFragment implements FragmentUtils.O
 
     private EditText edAppid;
     private EditText edToken;
-    private EditText edPlatform;
-    private EditText edBus1;
-    private EditText edBus2;
+    private EditText edCompanyid;
     private EditText edEncodingKey;
-
     private DataViewModel dataViewModel;
-
 
     public static SettingFragment newInstance() {
         Bundle args = new Bundle();
@@ -74,32 +70,23 @@ public class SettingFragment extends BaseLazyFragment implements FragmentUtils.O
     public void initView(@Nullable Bundle savedInstanceState, @Nullable View contentView) {
         edAppid = findViewById(R.id.edit_appid);
         edToken = findViewById(R.id.edit_token);
-        edPlatform = findViewById(R.id.edit_platform);
-        edBus1 = findViewById(R.id.edit_bus1);
-        edBus2 = findViewById(R.id.edit_bus2);
+        edCompanyid = findViewById(R.id.edit_companyid);
         edEncodingKey = findViewById(R.id.edit_encodingKey);
         ((TextView) findViewById(R.id.tvDevicetoken)).setText(String.format("device token:%s", dataViewModel.deviceToken.getValue()));
         edAppid.setText(dataViewModel.appid.getValue());
         edToken.setText(dataViewModel.token.getValue());
-        edPlatform.setText(dataViewModel.platformId.getValue());
-        edBus1.setText(dataViewModel.bus1Id.getValue());
-        edBus2.setText(dataViewModel.bus2Id.getValue());
+        edCompanyid.setText(dataViewModel.companyId.getValue());
         edEncodingKey.setText(dataViewModel.encodingKey.getValue());
         findViewById(R.id.btn_save).setOnClickListener(this::onDebouncingClick);
     }
 
     @Override
     public void onDebouncingClick(@NonNull View view) {
-        LogUtils.i("onDebouncingClick");
         if (view.getId() == R.id.btn_save) {
             dataViewModel.appid.postValue(edAppid.getText().toString());
             dataViewModel.token.postValue(edToken.getText().toString());
-            dataViewModel.platformId.postValue(edPlatform.getText().toString());
-            dataViewModel.bus1Id.postValue(edBus1.getText().toString());
-            dataViewModel.bus2Id.postValue(edBus2.getText().toString());
-            dataViewModel.platformSgin.postValue(EChatUtils.getSHA1(dataViewModel.token.getValue(), dataViewModel.appid.getValue(), dataViewModel.platformId.getValue()));
+            dataViewModel.companyId.postValue(edCompanyid.getText().toString());
             dataViewModel.encodingKey.postValue(edEncodingKey.getText().toString());
-            dataViewModel.makePlatformSgin();
             dataViewModel.makeNewMetadata();
             dataViewModel.saveData();
             ToastUtils.showShort("save successful");

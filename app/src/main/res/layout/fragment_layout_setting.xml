@@ -95,11 +95,11 @@
                 style="@style/SettingItemTextview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="平台id:"
+                android:text="公司id:"
                 android:textColor="#000" />
 
             <EditText
-                android:id="@+id/edit_platform"
+                android:id="@+id/edit_companyid"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -107,51 +107,6 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            style="@style/SettingItem"
-
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                style="@style/SettingItemTextview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="商户1 id:"
-                android:textColor="#000" />
-
-            <EditText
-                android:id="@+id/edit_bus1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:inputType="number" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            style="@style/SettingItem"
-
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                style="@style/SettingItemTextview"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="商户2 id:"
-                android:textColor="#000" />
-
-            <EditText
-                android:id="@+id/edit_bus2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:inputType="number" />
-
-        </LinearLayout>
 
         <LinearLayout
             style="@style/SettingItem"

@@ -6,24 +6,28 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SPUtils;
-import com.github.echat.chat.EChatActivity;
 import com.github.echat.chat.utils.Constants;
-import com.github.echat.chat.utils.EChatUtils;
+import com.github.echatmulti.sample.ui.MenuItemBadge;
 import com.github.echatmulti.sample.ui.SpecialTab;
 import com.github.echatmulti.sample.ui.SpecialTabRound;
 import com.github.echatmulti.sample.utils.DataViewModel;
+import com.github.echatmulti.sample.utils.RemoteNotificationUtils;
 import com.gyf.barlibrary.ImmersionBar;
 
 import java.util.ArrayList;
@@ -34,13 +38,7 @@ import me.majiajie.pagerbottomtabstrip.PageNavigationView;
 import me.majiajie.pagerbottomtabstrip.item.BaseTabItem;
 import me.majiajie.pagerbottomtabstrip.listener.OnTabItemSelectedListener;
 
-import static com.github.echat.chat.utils.Constants.CHAT_LAST_CHAT_TIME;
 import static com.github.echat.chat.utils.Constants.CHAT_UNREAD_COUNT;
-import static com.github.echat.chat.utils.Constants.EXTRA_COMPANY_ID;
-import static com.github.echat.chat.utils.Constants.EXTRA_NOTIFY;
-import static com.github.echat.chat.utils.Constants.EXTRA_URL;
-import static com.github.echatmulti.sample.utils.Constants.LASTCHAT;
-import static com.github.echatmulti.sample.utils.Constants.UNREAD_COUNT;
 
 public class MainActivity extends AppCompatActivity {
     private TextView mTextMessage;
@@ -51,9 +49,11 @@ public class MainActivity extends AppCompatActivity {
     NavigationController mNavigationController;
     PageNavigationView pageBottomTabLayout;
     ViewPager viewPager;
+    int page;
     Toolbar toolbar;
 
     int[] testColors = {0xFF455A64, 0xFF00796B, 0xFF795548, 0xFF5B4947, 0xFFF57C00};
+    private MenuItem notificationItem;
 
 
     @Override
@@ -79,10 +79,9 @@ public class MainActivity extends AppCompatActivity {
         toolbar.setBackgroundColor(testColors[0]);
 
         mNavigationController = pageBottomTabLayout.custom()
-                .addItem(newItem(R.mipmap.ic_home_default, R.mipmap.ic_home_selected, "平台"))
-                .addItem(newItem(R.mipmap.ic_person_default, R.mipmap.ic_person_selected, "商户1"))
-                .addItem(newRoundItem(R.drawable.ic_message_default, R.drawable.ic_message_selected, "消息"))
-                .addItem(newItem(R.mipmap.ic_person_default, R.mipmap.ic_person_selected, "商户2"))
+                .addItem(newItem(R.mipmap.ic_home_default, R.mipmap.ic_home_selected, "主页"))
+                .addItem(newItem(R.mipmap.ic_person_default, R.mipmap.ic_person_selected, "商品"))
+                .addItem(newItem(R.mipmap.ic_order_default, R.mipmap.ic_order_selected, "订单"))
                 .addItem(newItem(R.mipmap.ic_settings_default, R.mipmap.ic_settings_selected, "设置"))
                 .build();
 
@@ -97,6 +96,12 @@ public class MainActivity extends AppCompatActivity {
             public void onSelected(int index, int old) {
                 LogUtils.i("selected: " + index + " old: " + old);
                 toolbar.setBackgroundColor(testColors[index]);
+                page = index;
+                if (index == 3) {
+                    notificationItem.setVisible(false);
+                } else {
+                    notificationItem.setVisible(true);
+                }
             }
 
             @Override
@@ -111,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 LogUtils.i(String.format("deviceToken:%s", dataViewModel.deviceToken.getValue()));
                 LogUtils.i(String.format("metaData:%s", dataViewModel.metaDataOnlyUid.getValue()));
-                LogUtils.i(String.format("platformSgin:%s", dataViewModel.platformSgin.getValue()));
+                LogUtils.i(String.format("unreadCount:%d", dataViewModel.unReadCount.getValue()));
 
             }
         }, 5000);
@@ -119,8 +124,16 @@ public class MainActivity extends AppCompatActivity {
         dataViewModel.unReadCount.observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(@Nullable Integer integer) {
+                final int remoteCount = dataViewModel.unReadRemoteCount.getValue();
                 if (integer >= 0) {
-                    mNavigationController.setMessageNumber(2, integer);
+                    if (notificationItem != null) {
+                        //显示角标
+                        if (integer > 0) {
+                            MenuItemBadge.getBadgeTextView(notificationItem).setBadgeCount(integer + remoteCount);
+                        } else {
+                            MenuItemBadge.getBadgeTextView(notificationItem).setBadgeCount(0 + remoteCount);
+                        }
+                    }
                 }
             }
         });
@@ -153,10 +166,40 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         LogUtils.i("onResume");
-        dataViewModel.loadUnreadCount();//更新未读消息数
+        App.handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                dataViewModel.loadUnreadCount();//更新未读消息数
+            }
+        }, 300);
         receiver = new ListenUnreadCountReceiver();
         IntentFilter filter = new IntentFilter(Constants.ACTION_UNREAD_COUNT);
         registerReceiver(receiver, filter, Constants.BroadcastPermission.MESSAGE_SEND_PERMISSION, null);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        notificationItem = menu.findItem(R.id.action_notifications);
+        MenuItemBadge.update(this, notificationItem, new MenuItemBadge.Builder()
+                .iconDrawable(ContextCompat.getDrawable(this, R.drawable.ic_notifications_24dp))
+                .iconTintColor(Color.WHITE)
+                .textBackgroundColor(Color.parseColor("#EF4738"))
+                .textColor(Color.WHITE));
+        MenuItemBadge.getBadgeTextView(notificationItem).setBadgeCount(0);
+        LogUtils.i(SPUtils.getInstance().getInt(com.github.echatmulti.sample.utils.Constants.UNREAD_COUNT));
+        dataViewModel.loadUnreadCount();
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_notifications) {
+            RemoteNotificationUtils.cancelAll(this);
+            dataViewModel.whoOpenChat.postValue(page);
+        }
+        return true;
     }
 
     private DataViewModel initViewModel() {
@@ -194,16 +237,14 @@ public class MainActivity extends AppCompatActivity {
             super(fm);
             this.size = size;
             mFragments = new ArrayList<>();
-            mFragments.add(PlatformFragment.newInstance());
-            mFragments.add(BusinessFragment.newInstance(1));
-            mFragments.add(MessageFragment.newInstance());
-            mFragments.add(BusinessFragment.newInstance(2));
+            mFragments.add(HomeFragment.newInstance());
+            mFragments.add(VisEvtFragment.newInstance(1));
+            mFragments.add(OrderFragment.newInstance());
             mFragments.add(SettingFragment.newInstance());
         }
 
         @Override
         public Fragment getItem(int i) {
-            LogUtils.i("ViewPagerAdpater", "getItem: " + i);
             return mFragments.get(i);
         }
 
@@ -224,6 +265,7 @@ public class MainActivity extends AppCompatActivity {
             if (Constants.ACTION_UNREAD_COUNT.equals(action)) {
                 int notificationCount = bundle.getInt(CHAT_UNREAD_COUNT);
                 dataViewModel.unReadCount.postValue(notificationCount);
+                dataViewModel.saveUnreadCount();
             }
         }
     }

@@ -28,7 +28,7 @@
         <activity
             android:name="com.github.echat.chat.EChatActivity"
             android:configChanges="orientation|screenSize"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:theme="@style/EChatTheme.NoActionBar" />
         <activity
             android:name="com.github.echat.chat.otherui.CameraActivity"

@@ -18,6 +18,7 @@ import static com.github.echat.chat.utils.Constants.CHAT_UNREAD_COUNT;
 import static com.github.echat.chat.utils.Constants.EXTRA_CHAT_URL;
 import static com.github.echat.chat.utils.Constants.EXTRA_COMPANY_ID;
 import static com.github.echatmulti.sample.utils.Constants.LASTCHAT;
+import static com.github.echatmulti.sample.utils.Constants.REMOTE_UNREAD_COUNT;
 import static com.github.echatmulti.sample.utils.Constants.UNREAD_COUNT;
 
 /**
@@ -34,7 +35,6 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.e("进入报告广播", "此时的测试状态是：");
         String action = intent.getAction();
         Bundle bundle = intent.getExtras();
         /**
@@ -46,14 +46,11 @@ public class NotificationReceiver extends BroadcastReceiver {
             String companyName = bundle.getString(Constants.CHAT_COMPANY_NAME, "");//用作通知标题
             String chatUrl = bundle.getString(EXTRA_CHAT_URL, "");//可作为点开通知，直接打开的地址
             String msgContent = bundle.getString(Constants.CHAT_MSG_CONTENT, "");//客服/系统发送的消息内容
-            int unreadMsgCount = bundle.getInt(CHAT_UNREAD_COUNT);//这个用户的所有未读消息
+            int unreadMsgCount = bundle.getInt(CHAT_UNREAD_COUNT);//这个用户的所有未读消息数
             int msgType = bundle.getInt(Constants.CHAT_NEW_MSG_TYPE);//是对话新消息/平台新消息
             //来自对话的本地消息用
             if (msgType == Constants.TYPE_NEW_MSG_FROM_CHAT) {
                 //默认 平台多商户版 不启用该功能 则可忽略
-            }
-            //来自平台的消息
-            else if (msgType == Constants.TYPE_NEW_MSG_FROM_PLATFORM) {
                 RemoteNotificationUtils.cancel(context, Integer.parseInt(companyIdString));
                 RemoteNotificationUtils.getInstance(context)
                         .setCount(unreadMsgCount)
@@ -63,15 +60,16 @@ public class NotificationReceiver extends BroadcastReceiver {
                             put(EXTRA_CHAT_URL, chatUrl);
                         }});
             }
+
         }
         //接受未读消息数变更
         else if (Constants.ACTION_UNREAD_COUNT.equals(action)) {
-
             int notificationCount = bundle.getInt(CHAT_UNREAD_COUNT);
             //用于远程推送如果有时间戳，可根据这个时间戳，排除推送延迟的消息
             long lastChatTime = bundle.getLong(CHAT_LAST_CHAT_TIME);
             SPUtils.getInstance().put(LASTCHAT, lastChatTime);
             SPUtils.getInstance().put(UNREAD_COUNT, notificationCount);
+            SPUtils.getInstance().put(REMOTE_UNREAD_COUNT, 0);//都连接上了 不存在远程未读
         }
     }
 }

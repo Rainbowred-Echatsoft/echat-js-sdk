@@ -58,9 +58,23 @@
         <item name="android:textSize">24sp</item>
     </style>
 
-    <style name="MessageLayout">
+    <style name="OrderLayout">
         <item name="android:background">#fefefe</item>
         <item name="android:clickable">true</item>
+    </style>
+
+
+    <style name="OrderItem">
+        <item name="android:background">#FFFFFF</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:padding">16dp</item>
+    </style>
+
+    <style name="OrderItemTitleLayout">
+
+        <item name="android:padding">4dp</item>
+        <item name="android:layout_marginLeft">16dp</item>
     </style>
 
     <style name="MessageItem">

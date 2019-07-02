@@ -371,10 +371,9 @@ public class RequestUtils {
      * @return
      */
     private <T> Call requestGetByAsyn(String url, HashMap<String, String> paramsMap, final ReqCallBack<T> callBack) {
-        StringBuilder tempParams = new StringBuilder();
         try {
             String requestUrl = UrlUtils.appendParams(url, paramsMap);
-            LogUtils.wTag(requestUrl);
+            LogUtils.w(requestUrl);
             final Request request = addHeaders().url(requestUrl).build();
             final Call call = mOkHttpClient.newCall(request);
             call.enqueue(new Callback() {
@@ -388,7 +387,6 @@ public class RequestUtils {
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {
                         String string = response.body().string();
-                        Log.e(TAG, "response ----->" + string);
                         successCallBack((T) string, callBack);
                     } else {
                         failedCallBack("服务器错误", callBack);

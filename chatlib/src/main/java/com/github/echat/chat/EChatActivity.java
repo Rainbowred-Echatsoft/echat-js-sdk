@@ -9,7 +9,6 @@ import com.blankj.utilcode.util.LogUtils;
 import com.github.echat.chat.utils.Constants;
 import com.github.echat.chat.utils.FragmentUtils;
 
-import static com.github.echat.chat.utils.Constants.EXTRA_CHAT_URL;
 import static com.github.echat.chat.utils.Constants.EXTRA_NOTIFY;
 
 /**
@@ -31,8 +30,6 @@ public class EChatActivity extends AppCompatActivity {
         setContentView(R.layout.layout_at_echat);
 
         LogUtils.iTag(TAG, "onCreate");
-        LogUtils.wTag(TAG, this);
-        LogUtils.iTag(TAG, FragmentUtils.getAllFragments(getSupportFragmentManager()));
         if (savedInstanceState == null) {
             final Bundle bundle = getIntent().getExtras();
             LogUtils.iTag(TAG, bundle);
@@ -45,9 +42,15 @@ public class EChatActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onRestart() {
+        LogUtils.i("onRestart");
+        super.onRestart();
+    }
 
     @Override
     protected void onResume() {
+        LogUtils.i("onResume");
         super.onResume();
         if (newIntent) {
             Bundle extras = getIntent().getExtras();
@@ -66,9 +69,6 @@ public class EChatActivity extends AppCompatActivity {
         super.onNewIntent(intent);
         final Bundle bundle = intent.getExtras();
         if (bundle != null) {
-            LogUtils.iTag("推送数据", "应该收到推送数据");
-            //更新
-            LogUtils.iTag("推送数据", "加载地址: " + bundle.getString(EXTRA_CHAT_URL));
             this.newIntent = true;
         }
         setIntent(intent);
@@ -81,40 +81,19 @@ public class EChatActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * 打开消息盒子
-     *
-     * @param companyId    平台id
-     * @param platformSign 平台校验码
-     * @param pushInfo     推送信息
-     * @param metaData     客户加密数据
-     */
-    public static void openMessageBox(Context context, String companyId, String platformSign, String pushInfo, String metaData) {
-        Intent intent = new Intent(context, EChatActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString(Constants.COMPANY_ID, companyId);
-        bundle.putString(Constants.PLATFORM_SIGN, platformSign);
-        bundle.putString(Constants.PUSH_INFO, pushInfo);
-        bundle.putString(Constants.METADATA, metaData);
-        bundle.putString(Constants.TYPE, Constants.TYPE_MSGBOX);
-        intent.putExtras(bundle);
-        context.startActivity(intent);
-    }
 
     /**
      * 打开对话
      *
-     * @param companyId    平台id
-     * @param platformSign 平台校验码
+     * @param companyId    公司id
      * @param pushInfo     推送信息
      * @param metaData     客户加密数据
      * @param visEvt       图文消息
      */
-    public static void openChat(Context context, String companyId, String platformSign, String pushInfo, String metaData, String visEvt, String echatTag) {
+    public static void openChat(Context context, String companyId, String pushInfo, String metaData, String visEvt, String echatTag) {
         Intent intent = new Intent(context, EChatActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(Constants.COMPANY_ID, companyId);
-        bundle.putString(Constants.PLATFORM_SIGN, platformSign);
         bundle.putString(Constants.PUSH_INFO, pushInfo);
         bundle.putString(Constants.METADATA, metaData);
         bundle.putString(Constants.VISEVT, visEvt);

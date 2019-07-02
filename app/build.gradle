@@ -9,7 +9,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0.0.1"
+        versionName "1.0.0.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "XIAOMI_PUSH_ID", "\"\""
@@ -57,50 +57,21 @@ android {
 
     flavorDimensions "default"
     productFlavors {
-        //多商户
-        multi {
-            applicationIdSuffix ".multi"
-            manifestPlaceholders = [app_name             : "一洽多商户",
-                                    HUAWEI_PUSH          : "appid=100740549",
-                                    "APP_LOGO_PATH"      : "@mipmap/ic_echatmall_multi",
-                                    "APP_LOGO_ROUND_PATH": "@mipmap/ic_echatmall_multi_round"]
-            buildConfigField "String", "XIAOMI_PUSH_ID", '"2882303761517993713"'
-            buildConfigField "String", "XIAOMI_PUSH_KEY", '"5461799342713"'
-            buildConfigField "String", "UMENG_PUSH_APPKEY", '"5cc035db4ca357d6b80002bf"'
-            buildConfigField "String", "UMENG_MESSAGE_SECRET", '"d316e8be9bac27bdb864cdf0941221a1"'
-            buildConfigField "String", "HOME_URL", '"https://demo.echatsoft.com/web/html/platform/"'
-            buildConfigField "boolean", "dev", "false"
 
-            buildConfigField "String[]", "URL_ARRAY",
-                    "{" +
-                            "\"https://demo.echatsoft.com/app/\"," +
-                            "\"https://demo.rainbowred.com/app/\"," +
-                            "\"https://app.echatsoft.com/app/\"," +
-                            "\"https://demo.echatsoft.com/web/html/platform/\"" +
-                            "}"
-        }
-
-        //多商户开发
-        multidev {
-            applicationIdSuffix ".multi"
-            manifestPlaceholders = [app_name             : "一洽多商户开发",
-                                    HUAWEI_PUSH          : "appid=100740549",
-                                    "APP_LOGO_PATH"      : "@mipmap/ic_echatmall_multi",
-                                    "APP_LOGO_ROUND_PATH": "@mipmap/ic_echatmall_multi_round"
-            ]
+        //单商户
+        single {
+            applicationIdSuffix ".single"
+            manifestPlaceholders = [app_name             : "一洽商城",
+                                    HUAWEI_PUSH          : "appid=100912273",
+                                    "APP_LOGO_PATH"      : "@mipmap/ic_echatmall_single",
+                                    "APP_LOGO_ROUND_PATH": "@mipmap/ic_echatmall_single_round"]
             buildConfigField "boolean", "dev", "true"
-            buildConfigField "String", "XIAOMI_PUSH_ID", '"2882303761517993713"'
-            buildConfigField "String", "XIAOMI_PUSH_KEY", '"5461799342713"'
-            buildConfigField "String", "UMENG_PUSH_APPKEY", '"5cc035db4ca357d6b80002bf"'
-            buildConfigField "String", "UMENG_MESSAGE_SECRET", '"d316e8be9bac27bdb864cdf0941221a1"'
-            buildConfigField "String", "HOME_URL", '"https://app.echatsoft.com/web/html/platform/"'
-
-            buildConfigField "String[]", "URL_ARRAY",
-                    "{" +
-                            "\"https://app.echatsoft.com/web/html/platform/\"," +
-                            "\"https://demo.echatsoft.com/web/html/platform/\"" +
-                            "}"
+            buildConfigField "String", "XIAOMI_PUSH_ID", '"2882303761518049660"'
+            buildConfigField "String", "XIAOMI_PUSH_KEY", '"5791804946660"'
+            buildConfigField "String", "UMENG_PUSH_APPKEY", '"5d1f27930cafb27a4c000298"'
+            buildConfigField "String", "UMENG_MESSAGE_SECRET", '"903e038d4c2655ff4b517c42e3370439"'
         }
+
     }
 
     compileOptions {

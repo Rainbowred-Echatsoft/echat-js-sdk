@@ -121,7 +121,7 @@ public class RemoteNotificationUtils extends ContextWrapper {
 //                .setTicker(getString(R.string.android_auto_update_notify_ticker))
                 .setContentTitle(title)
                 .setContentText(content)
-                .setSmallIcon(getSmallIcon())
+                .setSmallIcon(R.mipmap.ic_echatmall_single)
                 .setLargeIcon(getLargeIcon())
                 .setWhen(time == null ? System.currentTimeMillis() : time)
                 .setAutoCancel(true)
@@ -204,7 +204,7 @@ public class RemoteNotificationUtils extends ContextWrapper {
         if (bigIcon != 0) {
             return BitmapFactory.decodeResource(getResources(), bigIcon);
         } else {
-            return ImageUtils.getBitmap(R.drawable.ic_logo);
+            return ImageUtils.getBitmap(R.mipmap.ic_echatmall_single);
         }
     }
 

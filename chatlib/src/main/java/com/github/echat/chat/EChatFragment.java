@@ -101,12 +101,10 @@ import static com.github.echat.chat.utils.Constants.CHAT_LAST_CHAT_TIME;
 import static com.github.echat.chat.utils.Constants.CHAT_UNREAD_COUNT;
 import static com.github.echat.chat.utils.Constants.COMPANY_ID;
 import static com.github.echat.chat.utils.Constants.METADATA;
-import static com.github.echat.chat.utils.Constants.PLATFORM_SIGN;
 import static com.github.echat.chat.utils.Constants.PUSH_INFO;
 import static com.github.echat.chat.utils.Constants.SP_LAST_CHAT_TIME;
 import static com.github.echat.chat.utils.Constants.TYPE;
 import static com.github.echat.chat.utils.Constants.TYPE_CHAT;
-import static com.github.echat.chat.utils.Constants.TYPE_MSGBOX;
 import static com.github.echat.chat.utils.Constants.ECHATTAG;
 import static com.github.echat.chat.utils.Constants.VISEVT;
 
@@ -127,8 +125,9 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     private Toolbar toolbar;
     private MenuItem endChat;
     private WebView mWebView;
-    private boolean uploading;//处理上次异常关闭
+    private boolean dontStopJavascript;//处理上次异常关闭 或 无需暂停webview标记
     private DownloadCompleteReceiver downloadCompleteReceiver;
+    private boolean destroyView = false;
 
     public static EChatFragment newInstance(Bundle args) {
         EChatFragment fragment = new EChatFragment();
@@ -148,7 +147,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LogUtils.iTag(TAG, "onCreate");
+        LogUtils.iTag(TAG, "onCreate " + this);
         if (savedInstanceState != null) {
             boolean isSupportHidden = savedInstanceState.getBoolean(STATE_SAVE_IS_HIDDEN);
             FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -174,35 +173,46 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
 
     @Override
     public void onResume() {
-        LogUtils.iTag(TAG, "onResume");
+        LogUtils.iTag(TAG, "onResume " + this);
         super.onResume();
+        unreadCount = 0;
+        sendUnreadCount(unreadCount, lastChatTime);
         //恢复Webview活动
-        mWebView.resumeTimers();
+        /*mWebView.resumeTimers();
         /**
          *  通知一洽H5重新开始通信
          */
-        callJs(mWebView, "EchatReConnect", null);
+        /*callJs(mWebView, "EchatReConnect", null);*/
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        LogUtils.iTag(TAG, "onPause " + this);
 
-        /**
-         * 通知一洽H5停止通信(作用快速通知服务器用户离线 客服消息由远程消息推送)
-         * 如果是上传视频
-         */
-        if (!uploading) {
-            callJs(mWebView, "EchatActiveOffline", null);
-            mHandler.postDelayed(() -> {
-                //暂停Webview活动
-                mWebView.pauseTimers();
-            }, 100);
-        }
         try {
             JZVideoPlayer.releaseAllVideos();
         } catch (NoClassDefFoundError e) {
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        LogUtils.iTag(TAG, "onStop " + this);
+        /**
+         * 通知一洽H5停止通信(作用快速通知服务器用户离线 客服消息由远程消息推送)
+         * 如果是上传视频
+         */
+        /*if (!dontStopJavascript) {
+            callJs(mWebView, "EchatActiveOffline", null);
+            mHandler.postDelayed(() -> {
+                //暂停Webview活动
+                if (!destroyView) {
+                    mWebView.pauseTimers();
+                }
+            }, 100);
+        }*/
     }
 
     @Override
@@ -214,7 +224,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        LogUtils.iTag(TAG, "onViewCreated: ");
+        LogUtils.iTag(TAG, "onViewCreated: " + this);
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = getArguments();
         //handle data
@@ -224,6 +234,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     }
 
     private void initData(Bundle bundle) {
+        LogUtils.e("未读消息数:" + unreadCount);
 
         //先初始化
         lastChatTime = SPUtils.getInstance().getLong(SP_LAST_CHAT_TIME);
@@ -236,7 +247,6 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         //用户点击打开
         else {
             openCompanyId = bundle.getString(COMPANY_ID);
-            platformSign = bundle.getString(PLATFORM_SIGN);
             pushInfo = bundle.getString(PUSH_INFO);
             metaData = bundle.getString(METADATA);
             visEvt = bundle.getString(VISEVT);
@@ -245,13 +255,9 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             LogUtils.i(String.format("visEvt:%s ", visEvt));
             if (TYPE_CHAT.equals(type)) {
                 openUrl = CHAT_URL;
-            } else if (TYPE_MSGBOX.equals(type)) {
-                openUrl = UrlUtils.appendParam(MSGBOX_URL, "echatTitleBar", "0");
             }
-
             openUrl = UrlUtils.appendParams(openUrl, new HashMap<String, String>() {{
                 if (!TextUtils.isEmpty(openCompanyId)) put("companyId", openCompanyId);
-                if (!TextUtils.isEmpty(platformSign)) put("platformSign", platformSign);
                 if (!TextUtils.isEmpty(pushInfo)) put("pushInfo", pushInfo);
                 if (!TextUtils.isEmpty(metaData)) put("metaData", metaData);
                 if (!TextUtils.isEmpty(visEvt)) put("visEvt", visEvt);
@@ -265,7 +271,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     private void initBaseUI(Bundle savedInstanceState) {
         //意外销毁 恢复
         if (savedInstanceState != null) {
-            uploading = savedInstanceState.getBoolean("Uploading");
+            dontStopJavascript = savedInstanceState.getBoolean("Uploading");
         }
 
         toolbar = mContentView.findViewById(R.id.toolbar);
@@ -278,7 +284,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             @Override
             public void onClick(View v) {
                 //返回
-                nativeBackClick();
+                closeChatView();
             }
         });
 
@@ -323,21 +329,21 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         }
 
         //无视频播放时 调用返回处理方法
-        nativeBackClick();
+        closeChatView();
         return false;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        LogUtils.iTag(TAG, "onActivityCreated: ");
+        LogUtils.iTag(TAG, "onActivityCreated: " + this);
         super.onActivityCreated(savedInstanceState);
         init(savedInstanceState, mContentView);
     }
 
     @Override
     public void onDestroyView() {
-        LogUtils.iTag(TAG, "onDestroyView: ");
-
+        LogUtils.iTag(TAG, "onDestroyView:  " + this);
+        destroyView = true;
         getWActivity().unregisterReceiver(downloadCompleteReceiver);
 
         /**
@@ -365,7 +371,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     @Override
     public void onDestroy() {
         super.onDestroy();
-        LogUtils.iTag(TAG, "onDestroy: ");
+        LogUtils.iTag(TAG, "onDestroy: " + this);
 
     }
 
@@ -735,7 +741,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     }
 
     public void onPageFinished(WebView view, String url) {
-        if (uploading) {
+        if (dontStopJavascript) {
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("functionName", "triggerFile");
@@ -915,7 +921,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                 }).callback(new PermissionUtils.SimpleCallback() {
             @Override
             public void onGranted() {
-                uploading = true;
+                dontStopJavascript = true;
                 startActivityForResult(new Intent(getWActivity(), CameraActivity.class), CameraActivity.REQUEST_CODE_CUSTOM_CAMERA);
             }
 
@@ -932,7 +938,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     private void openGallery() {
         LogUtils.iTag(TAG, "openGalaery: " + getWActivity().getPackageName() + ".fileprovider");
         if (checkStoragePermission() && checkCameraPermission()) {
-            uploading = true;
+            dontStopJavascript = true;
             Matisse.from(this)
                     .choose(MimeType.ofAll(), false)
                     .theme(R.style.Matisse_Custom)
@@ -1048,7 +1054,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        uploading = false;
+        dontStopJavascript = false;
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
             /**
              * 处理回调对象为空的时候
@@ -1092,14 +1098,13 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
 
     /*-------------EChat----------------*/
     private String chatStatus = "unKnown";
-    private int echatPageStatus;//当前页面状态
 
     private String openUrl;//最后拼接好的Url
     private String openCompanyId;//外部传入的打开的公司id 可能会和👇进行合并
+    private int unreadCount;
     private String currentCompanyId;
     private String currentCompanyName;
 
-    private String platformSign;
     private String pushInfo;
     private String metaData;
     private String visEvt;
@@ -1113,8 +1118,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     private int msgboxUreadMsgCount;
 
 
-    public final static String CHAT_URL = "https://ps.echatsoft.com/visitor/mobile/chat.html";
-    public final static String MSGBOX_URL = "https://ps.echatsoft.com/visitor/mobile/platform/msgbox.html";
+    public final static String CHAT_URL = "https://es.echatsoft.com/visitor/mobile/chat.html";
 
     private ValueCallback<Uri> mUploadMessage;
     private ValueCallback<Uri[]> mUploadMessageL;
@@ -1206,47 +1210,6 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                 final String functionName = jsonObject.optString("functionName");
                 final String value = jsonObject.optString("value");
 
-                /**
-                 * 获得H5 当前页面状态
-                 */
-                if ("echatPageStatus".equals(functionName)) {
-
-                    LogUtils.iTag("echatPageStatus", value);
-                    JSONObject valueObject = new JSONObject(value);
-                    int event = valueObject.optInt("event");
-                    echatPageStatus = event;
-
-                    /**
-                     * 1:请求对话，消息盒子点击某个商户或者平台时触发此事件（平台版用户会有此事件）
-                     * 2:隐藏对话 消息盒子正在进行的对话隐藏后触发（平台版用户会有此事件）
-                     * 3:返回主页面 ，在访客请求离开一洽页面时触发.
-                     * 4:进入消息盒子页面（平台版用户会有此事件）
-                     * 5:进入浏览页面
-                     * 6:单独对话窗口打开
-                     * 7:浏览页面对话窗口打开
-                     * 8:浏览页面隐藏对话窗口
-                     */
-                    if (event == 1 || event == 6) {
-                        JSONObject eventValue = valueObject.optJSONObject("eventValue");
-                        currentCompanyId = eventValue.optString("companyId");
-                        currentCompanyName = eventValue.optString("companyName");
-                        //设置公司名字
-                        updateTitle(currentCompanyName);
-                    } else if (event == 2 || event == 4) {
-                        setUnreadCountMsgboxTitle();
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                endChat.setVisible(false);
-                            }
-                        });
-                    } else if (event == 3) {
-                        closeChatView();
-                    } else if (event == 5) {
-
-                    }
-
-                }
 
                 if ("sendVisitorId".equals(functionName)) {
                     visitorId = value;
@@ -1258,46 +1221,8 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
 
                 if ("sendWebsocketTime".equals(functionName)) {
                     lastChatTime = jsonObject.optLong("value");
+                    sendUnreadCount(unreadCount, lastChatTime);
                     SPUtils.getInstance().put(SP_LAST_CHAT_TIME, lastChatTime);
-                }
-
-
-                //平台客户新消息
-                if ("platformNewMsg".equals(functionName)) {
-                    JSONObject newMsgInfo = new JSONObject(value);
-                    //获得未读消息数
-                    final int unreadMsgCount = newMsgInfo.optInt("unreadMsgCount");
-                    if (msgboxUreadMsgCount != unreadMsgCount || msgboxUreadMsgCount == 0) {
-                        msgboxUreadMsgCount = unreadMsgCount;
-                        sendUnreadCount(msgboxUreadMsgCount, lastChatTime);
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                //消息盒子显示 最新未读消息数
-                                if (echatPageStatus == 2 || echatPageStatus == 4) {
-                                    setUnreadCountMsgboxTitle();
-                                }
-                            }
-                        });
-                    }
-
-                    /**
-                     * 获得平台新消息，sendNewMessage方法内部屏蔽了当msgContent为空时，不进行推送，只更新消息数
-                     */
-                    String chatUrl = newMsgInfo.optString("chatUrl");
-                    String companyIdString = newMsgInfo.optString("companyId");
-                    String companyName = newMsgInfo.optString("companyName");
-                    String msgContent = newMsgInfo.optString("msgContent");
-
-                    if (echatPageStatus == 2 || echatPageStatus == 4) {//消息盒子 隐藏的时候 要做通知
-                        if (!AppUtils.isAppForeground()) {
-                            sendNewMessage(chatUrl, companyIdString, companyName, msgContent, Constants.TYPE_NEW_MSG_FROM_PLATFORM);
-                        }
-                    } else if (echatPageStatus == 1 || echatPageStatus == 6) {//单独对话收到平台消息 要做通知
-                        if (!TextUtils.isEmpty(msgContent) || !TextUtils.isEmpty(companyName)) {
-                            sendNewMessage(chatUrl, companyIdString, companyName, msgContent, Constants.TYPE_NEW_MSG_FROM_PLATFORM);
-                        }
-                    }
                 }
 
                 /**
@@ -1360,7 +1285,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
 
 
                 /**
-                 * 有新消息 多商户可以不处理
+                 * 有新消息
                  * 需要在隐藏Webview的情况 接收到newMsg消息 请把onPause和onResume中的操作注释掉
                  * 注意：因为上传文件需要保持JavaScript状态，进行文件上传的时候请勿暂停webiew
                  */
@@ -1369,8 +1294,9 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                         public void run() {
                             if (!AppUtils.isAppForeground()) {
                                 String tempCurrentUrl = mWebView.getUrl();
-                                LogUtils.iTag("NewMsg", String.format("NewMsg companyId:%s, currentUrl:%s", currentCompanyId, tempCurrentUrl));
-                                sendNewMessage(tempCurrentUrl, currentCompanyId, currentCompanyName, value, Constants.TYPE_NEW_MSG_FROM_CHAT);
+                                unreadCount++;
+                                sendUnreadCount(unreadCount, lastChatTime);
+                                sendNewMessage(tempCurrentUrl, currentCompanyId, currentCompanyName, value, unreadCount, Constants.TYPE_NEW_MSG_FROM_CHAT);
                             }
 
                         }
@@ -1384,7 +1310,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                     chatStatus = value;
                     mHandler.post(new Runnable() {
                         public void run() {
-                            handleMulttMerChantStatus();
+                            handleChatStatus();
                             Log.i("JS Call", "functionName: " + functionName + ",  value: " + value);
                         }
                     });
@@ -1409,7 +1335,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                 if (functionName.equals("chatStaffInfo")) {
                     mHandler.post(new Runnable() {
                         public void run() {
-                            //handleStaffName(value);
+                            handleStaffName(value);
                             downloadStaffHead(value);
                             Log.i("JS Call", functionName + "." + value);
                         }
@@ -1422,8 +1348,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                 if (functionName.equals("visitorHide")) {
                     mHandler.post(new Runnable() {
                         public void run() {
-                            LogUtils.iTag(BACK_EVENT_TAG, "visitorHide nativeBackClick");
-                            nativeBackClick();
+                            closeChatView();
                         }
                     });
                 }
@@ -1436,8 +1361,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     }
 
 
-    private void sendNewMessage(String chatUrl, String companyIdString, String companyName, String msgContent, int newMsgType) {
-        LogUtils.iTag(TAG, "sendNewMessage");
+    private void sendNewMessage(String chatUrl, String companyIdString, String companyName, String msgContent, int unreadMsgCount, int newMsgType) {
         if (!TextUtils.isEmpty(msgContent) || !TextUtils.isEmpty(companyName)) {
             Intent intent = new Intent();
             Bundle bundle = new Bundle();
@@ -1446,6 +1370,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             bundle.putString(Constants.CHAT_COMPANY_ID, companyIdString);
             bundle.putString(Constants.CHAT_COMPANY_NAME, companyName);
             bundle.putString(Constants.CHAT_MSG_CONTENT, msgContent);
+            bundle.putInt(CHAT_UNREAD_COUNT, unreadMsgCount);
             intent.putExtras(bundle);
             intent.setAction(ACTION_NEW_MSG);
             getWActivity().sendBroadcast(intent, Constants.BroadcastPermission.MESSAGE_RECEIVE_PERMISSION);
@@ -1467,17 +1392,11 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
      * close current chat activity(fragment)
      */
     private void closeChatView() {
+        chatStatus = "unKnown";
+        callJs(mWebView, "EchatActiveOffline", null);
         getWActivity().finish();
     }
 
-    private void setUnreadCountMsgboxTitle() {
-        String title = "消息";
-        if (msgboxUreadMsgCount != 0) {
-            title += String.format("(%d)", msgboxUreadMsgCount);
-        }
-        String finalTitle = title;
-        updateTitle(finalTitle);
-    }
 
     private void updateTitle(String title) {
         if (Looper.myLooper() != Looper.getMainLooper()) {
@@ -1493,98 +1412,58 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     }
 
     /**
-     * 多商户对话中按钮处理 (关闭按钮+是否回退)
+     * 对话中按钮处理 (关闭按钮+是否回退)
      */
-    private void handleMulttMerChantStatus() {
+    private void handleChatStatus() {
         if (chatStatus.equals("unKnown")) {
+            updateTitle("   ");
             endChat.setVisible(false);
         } else if (chatStatus.equals("waiting")) {
+            updateTitle("等待接入对话");
             endChat.setVisible(true);
         } else if (chatStatus.equals("chatting")) {
+            updateTitle("对话中");
             endChat.setTitle("结束对话");
+            if (staffNickName != null) {
+                updateTitle(staffNickName);
+            }
             endChat.setVisible(true);
         } else if (chatStatus.equals("leaveDisabled")) {
+            updateTitle("非工作时间");
             endChat.setVisible(false);
         } else if (chatStatus.equals("leaveToService")) {
+            updateTitle("请留言");
             endChat.setTitle("结束留言");
             endChat.setVisible(true);
         } else if (chatStatus.equals("leaveToUrl")) {
+            updateTitle("非工作时间");
             endChat.setVisible(false);
         } else if (chatStatus.equals("robot")) {
+            if (TextUtils.isEmpty(staffNickName)) {
+                updateTitle("机器人对话中");
+            } else {
+                updateTitle(staffNickName);
+            }
             endChat.setVisible(true);
         } else if (chatStatus.contains("end")) {
+            updateTitle("...");
             endChat.setVisible(false);
             String env = chatStatus.split("-")[2];
             String visitor = chatStatus.split("-")[1];
             if ("0".equals(env) && "1".equals(visitor)) {//不需要评价
-                LogUtils.iTag(BACK_EVENT_TAG, String.format("pageEvent:%s", echatPageStatus));
-                if (echatPageStatus == 1) {
-                    LogUtils.iTag(BACK_EVENT_TAG, String.format("echatPageStatus == 1 ,pageEvent:%s", echatPageStatus));
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            LogUtils.iTag(BACK_EVENT_TAG, String.format("postDelayed ,pageEvent:%s", echatPageStatus));
-                            if (!(echatPageStatus == 2 || echatPageStatus == 4)) {
-                                LogUtils.iTag(BACK_EVENT_TAG, String.format("postDelayed ,pageEvent:%s", echatPageStatus));
-                                nativeBackClick();
-                            }
-                        }
-                    }, 300);
-                } else {
-                    if (!(echatPageStatus == 2 || echatPageStatus == 4)) {
-                        nativeBackClick();
-                    }
-                }
+                closeChatView();
             }
         }
     }
 
-    private static final String BACK_EVENT_TAG = "Chat_Back";
 
     private void handleVisitorEvaluate(String value) {
         String status = value.split("-")[1];
-        LogUtils.iTag(BACK_EVENT_TAG, status);
         if (status.equals("2")) {
-            if (!(echatPageStatus == 2 || echatPageStatus == 4)) {
-                nativeBackClick();
-            }
-        }
-    }
-
-    /**
-     * 消息盒子/对话 处理不同页面状态下的返回操作
-     */
-    private void nativeBackClick() {
-        LogUtils.iTag(BACK_EVENT_TAG, String.format("postDelayed ,pageEvent:%s", echatPageStatus));
-        if (echatPageStatus == 1) {//1、消息盒子 -> 已打开对话窗口
-            if (mWebView.canGoBack()) {
-                mWebView.goBack();
-            } else {
-                callJs(mWebView, "echatBackEvent", null);
-            }
-        } else if (echatPageStatus == 6) {//6、直接打开对话 直接打开对话
-            //判断当前对话是否跳转出去
-            if (mWebView.canGoBack()) {
-                mWebView.goBack();
-            } else {
-                closeChatView();
-                echatPageStatus = 0;
-            }
-
-        } else if (echatPageStatus == 2 || echatPageStatus == 4) {//2、隐藏对话窗口 -> 推断是消息盒子 4、进入消息盒子
-            closeChatView();
-            echatPageStatus = 0;
-        } else if (echatPageStatus == 3) {//3、返回主页面 ，在访客请求离开消息盒子页面时触发.
-            closeChatView();
-            echatPageStatus = 0;
-        } else if (echatPageStatus == 5) {//5、进入浏览页面 （用户刘总）
-            if (mWebView.canGoBack()) {
-                mWebView.goBack();
-            }
-        } else if (echatPageStatus == 0) {//为正确获得页面状态 直接返回
             closeChatView();
         }
     }
+
 
     /**
      * 获得客服昵称
@@ -1595,9 +1474,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         try {
             JSONObject jsonObject = new JSONObject(value);
             staffNickName = jsonObject.getString("staffNickName");
-            if (!TextUtils.isEmpty(staffNickName)) {
-                toolbar.setTitle(staffNickName);
-            }
+            updateTitle(staffNickName);
         } catch (Exception e) {
         }
 

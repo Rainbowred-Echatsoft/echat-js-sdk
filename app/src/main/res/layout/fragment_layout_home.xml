@@ -3,19 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="平台"
-        style="@style/FragmentTextviewTitle"
-        />
-
     <Button
         android:id="@+id/btn_open_chat"
+        style="@style/EChatButton.Item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/EChatButton.Item"
-        android:text="咨询平台"
-         />
+        android:text="咨询" />
 </LinearLayout>

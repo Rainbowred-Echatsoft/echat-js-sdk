@@ -41,7 +41,6 @@
             android:value="${HUAWEI_PUSH}" />
         <activity
             android:name=".HandleMessageActivity"
-            android:label="@string/title_activity_handle_message"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 

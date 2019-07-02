@@ -3,13 +3,11 @@ package com.github.echat.chat.utils;
 public interface Constants {
 
     String COMPANY_ID = "companyId";
-    String PLATFORM_SIGN = "platformSign";
     String PUSH_INFO = "pushInfo";
     String METADATA = "metaData";
     String VISEVT = "visEvt";
     String ECHATTAG = "echatTag";
     String TYPE = "type";
-    String TYPE_MSGBOX = "msgbox";
     String TYPE_CHAT = "chat";
 
     String EXTRA_NOTIFY = "extra_notify";
@@ -30,7 +28,6 @@ public interface Constants {
 
     String CHAT_NEW_MSG_TYPE = "chat_new_msg_type";//广播给主APP的消息类型
     int TYPE_NEW_MSG_FROM_CHAT = 17100;//来自对话中的新消息
-    int TYPE_NEW_MSG_FROM_PLATFORM = 17101;//来自平台的新消息
     String EXTRA_BROWER_URL = "extra_brower_url";
 
     interface BroadcastPermission {

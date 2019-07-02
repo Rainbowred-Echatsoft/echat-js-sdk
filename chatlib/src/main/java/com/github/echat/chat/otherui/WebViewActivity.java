@@ -33,7 +33,7 @@ import android.widget.ProgressBar;
 
 
 import com.blankj.utilcode.util.LogUtils;
-import com.github.echatmulti.sample.R;
+import com.github.echat.chat.R;
 
 import java.util.Map;
 

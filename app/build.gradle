@@ -9,7 +9,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0.0.3"
+        versionName "1.0.0.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "XIAOMI_PUSH_ID", "\"\""
@@ -63,8 +63,8 @@ android {
             applicationIdSuffix ".single"
             manifestPlaceholders = [app_name             : "一洽商城",
                                     HUAWEI_PUSH          : "appid=100912273",
-                                    "APP_LOGO_PATH"      : "@mipmap/ic_echatmall_single",
-                                    "APP_LOGO_ROUND_PATH": "@mipmap/ic_echatmall_single_round"]
+                                    "APP_LOGO_PATH"      : "@mipmap/ic_echatmall_multi",
+                                    "APP_LOGO_ROUND_PATH": "@mipmap/ic_echatmall_multi_round"]
             buildConfigField "boolean", "dev", "true"
             buildConfigField "String", "XIAOMI_PUSH_ID", '"2882303761518049660"'
             buildConfigField "String", "XIAOMI_PUSH_KEY", '"5791804946660"'

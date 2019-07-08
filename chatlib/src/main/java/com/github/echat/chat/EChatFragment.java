@@ -1112,6 +1112,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
 
 
     private String visitorId;//访客id
+    private String encryptVId;//加密访客ID
     private long lastChatTime;
     // TODO: 2019-06-27 转成本地地址 广播发给主APP
     private Bitmap staffHead;
@@ -1212,7 +1213,9 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
 
 
                 if ("sendVisitorId".equals(functionName)) {
-                    visitorId = value;
+                    final JSONObject valueObj = jsonObject.optJSONObject("value");
+                    visitorId = valueObj.optString("visitorId");
+                    encryptVId = valueObj.optString("encryptVId");
                 }
 
                 if ("sendCompanyId".equals(functionName)) {

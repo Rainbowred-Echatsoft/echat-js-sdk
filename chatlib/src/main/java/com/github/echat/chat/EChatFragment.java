@@ -63,6 +63,7 @@ import com.blankj.utilcode.util.PathUtils;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.echat.cameralibrary.util.LogUtil;
 import com.echat.jzvd.JZVideoPlayer;
 import com.echat.jzvd.JZVideoPlayerStandard;
 import com.github.echat.chat.otherui.BrowserActivity;
@@ -1276,14 +1277,24 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                     final JSONObject valueObj = jsonObject.optJSONObject("value");
                     final String openType = valueObj.optString("openType");
                     final String url = valueObj.optString("url");
+                    final Uri uri = Uri.parse(url);
+                    LogUtils.i(uri.getHost());
+                    LogUtils.i(uri.getAuthority());
+                    LogUtils.i(uri.getEncodedQuery());
+                    LogUtils.i(uri.getQuery());
+                    LogUtils.i(uri.getScheme());
+                    LogUtils.i(uri.getQueryParameter("visitorId"));
+
                     Intent intent = new Intent();
                     intent.putExtra(Constants.EXTRA_BROWER_URL, url);
-                    if ("blank".equals(openType)) {
-                        intent.setClass(getWActivity(), BrowserActivity.class);
-                    } else if ("inner".equals(openType)) {
-                        intent.setClass(getWActivity(), WebviewBottomDialogActivity.class);
+                    if (!EChatCore.getInstance().getCallback().openLink(getWActivity(), url, openType)) {
+                        if ("blank".equals(openType)) {
+                            intent.setClass(getWActivity(), BrowserActivity.class);
+                        } else if ("inner".equals(openType)) {
+                            intent.setClass(getWActivity(), WebviewBottomDialogActivity.class);
+                        }
+                        startActivity(intent);
                     }
-                    startActivity(intent);
                 }
 
 

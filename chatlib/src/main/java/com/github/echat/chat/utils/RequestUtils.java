@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.blankj.utilcode.util.EncryptUtils;
 import com.blankj.utilcode.util.LogUtils;
+import com.github.echat.chat.BuildConfig;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -373,7 +374,6 @@ public class RequestUtils {
     private <T> Call requestGetByAsyn(String url, HashMap<String, String> paramsMap, final ReqCallBack<T> callBack) {
         try {
             String requestUrl = UrlUtils.appendParams(url, paramsMap);
-            LogUtils.w(requestUrl);
             final Request request = addHeaders().url(requestUrl).build();
             final Call call = mOkHttpClient.newCall(request);
             call.enqueue(new Callback() {
@@ -440,6 +440,48 @@ public class RequestUtils {
                         Log.e(TAG, "response ----->" + string);
                         successCallBack((T) string, callBack);
                     } else {
+                        Log.e(TAG, response.body().toString());
+                        failedCallBack("服务器错误", callBack);
+                    }
+                }
+            });
+            return call;
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        }
+        return null;
+    }
+
+    /**
+     * @param url
+     * @param getParamsMap
+     * @param jsonParam
+     * @param callBack
+     * @param <T>
+     * @return
+     */
+    public <T> Call requestPostJsonByAsyn(String url, HashMap<String, String> getParamsMap, String jsonParam, final ReqCallBack<T> callBack) {
+        try {
+            String requestUrl = UrlUtils.appendParams(url, getParamsMap);
+            RequestBody body = RequestBody.create(MEDIA_TYPE_JSON, jsonParam);
+            Log.e(TAG, "url: " + requestUrl);
+            final Request request = addHeaders().url(requestUrl).post(body).build();
+            final Call call = mOkHttpClient.newCall(request);
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    failedCallBack("访问失败", callBack);
+                    Log.e(TAG, e.toString());
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String string = response.body().string();
+                        Log.e(TAG, "response ----->" + string);
+                        successCallBack((T) string, callBack);
+                    } else {
+                        Log.e(TAG, response.body().string());
                         failedCallBack("服务器错误", callBack);
                     }
                 }
@@ -505,8 +547,7 @@ public class RequestUtils {
                 .addHeader("Connection", "keep-alive")
                 .addHeader("platform", "2")
                 .addHeader("phoneModel", Build.MODEL)
-                .addHeader("systemVersion", Build.VERSION.RELEASE)
-                .addHeader("appVersion", "3.2.0");
+                .addHeader("systemVersion", Build.VERSION.RELEASE);
         return builder;
     }
 

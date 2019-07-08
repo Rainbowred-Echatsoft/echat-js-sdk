@@ -14,7 +14,7 @@ public interface Constants {
     String EXTRA_COMPANY_ID = "extra_company_id";
     String EXTRA_URL = "extra_url";
 
-    String SP_LAST_CHAT_TIME ="sp_last_chat_time";
+    String SP_LAST_CHAT_TIME = "sp_last_chat_time";
 
     //用于主app 接受推送数据
     String ACTION_NEW_MSG = "com.echat.chat.action.NEW_MSG";
@@ -29,6 +29,9 @@ public interface Constants {
     String CHAT_NEW_MSG_TYPE = "chat_new_msg_type";//广播给主APP的消息类型
     int TYPE_NEW_MSG_FROM_CHAT = 17100;//来自对话中的新消息
     String EXTRA_BROWER_URL = "extra_brower_url";
+
+
+    String SEND_VISEVT_APIURL = "https://eapi.echatsoft.com/pushVisitorEvent";
 
     interface BroadcastPermission {
         String MESSAGE_RECEIVE_PERMISSION = "com.echat.chat.RECEIVE_PERMISSION";

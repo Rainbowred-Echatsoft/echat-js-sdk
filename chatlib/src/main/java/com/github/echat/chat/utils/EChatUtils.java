@@ -1,12 +1,20 @@
 package com.github.echat.chat.utils;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.widget.TextView;
+
 import com.github.echat.chat.utils.aes.AesUtils;
 
 import org.dom4j.Document;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -65,6 +73,49 @@ public class EChatUtils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * 发送图文消息
+     *
+     * @param companyId  公司ID 必须
+     * @param metaData   metaData/visitorId/encryptVId 三选一
+     * @param visitorId  metaData/visitorId/encryptVId 三选一
+     * @param encryptVId metaData/visitorId/encryptVId 三选一
+     * @param visEvtJSON 图文消息JSON 必须
+     * @param callback
+     */
+    public static void sendVisEvt(@NonNull Context context, @NonNull String companyId, String metaData, String visitorId, String encryptVId, @NonNull String visEvtJSON, SendVisEvtCallback callback) {
+        if (TextUtils.isEmpty(companyId) || context == null || TextUtils.isEmpty(visEvtJSON))
+            return;
+        if ((TextUtils.isEmpty(visitorId) && TextUtils.isEmpty(metaData) && TextUtils.isEmpty(encryptVId)))
+            return;
+        RequestUtils.getInstance(context).requestPostJsonByAsyn(Constants.SEND_VISEVT_APIURL, new HashMap<String, String>() {{
+            if (!TextUtils.isEmpty(metaData)) put("metaData", metaData);
+            if (!TextUtils.isEmpty(visitorId)) put("visitorId", visitorId);
+            if (!TextUtils.isEmpty(encryptVId)) put("encryptVId", encryptVId);
+        }}, visEvtJSON, new RequestUtils.ReqCallBack<String>() {
+            @Override
+            public void onReqSuccess(String result) {
+                try {
+                    JSONObject resutlObj = new JSONObject(result);
+                    if (resutlObj.optInt("errcode") == 0) {
+                        if (callback != null) callback.onStatus(true);
+                    }
+                } catch (JSONException e) {
+                    if (callback != null) callback.onStatus(false);
+                }
+            }
+
+            @Override
+            public void onReqFailed(String errorMsg) {
+                if (callback != null) callback.onStatus(true);
+            }
+        });
+    }
+
+    public interface SendVisEvtCallback {
+        void onStatus(boolean flag);
     }
 
 

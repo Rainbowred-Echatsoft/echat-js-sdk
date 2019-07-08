@@ -4,18 +4,27 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.app.Notification;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.design.widget.BottomSheetDialog;
+import android.text.Html;
 import android.text.TextUtils;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.TextView;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.blankj.utilcode.util.ToastUtils;
+import com.github.echat.chat.EChatCore;
 import com.github.echat.chat.utils.Constants;
+import com.github.echat.chat.utils.EChatUtils;
 import com.github.echatmulti.sample.utils.RemoteNotificationUtils;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.message.IUmengRegisterCallback;
@@ -26,11 +35,13 @@ import com.umeng.message.entity.UMessage;
 
 import org.android.agoo.huawei.HuaWeiRegister;
 import org.android.agoo.xiaomi.MiPushRegistar;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +79,68 @@ public class App extends Application {
             }
         }
 
+        //拦截模块内的openLink
+        EChatCore.getInstance().setCallback(new EChatCore.Callback() {
+            @Override
+            public boolean openLink(Context context, String url, String type) {
+                final Uri uri = Uri.parse(url);
+                LogUtils.i(uri);
+                final String host = uri.getHost();
+                final String metaData = uri.getQueryParameter("metaData");
+                LogUtils.i("metaData", metaData);
+                final String visitorId = uri.getQueryParameter("visitorId");
+                LogUtils.i("visitorId", visitorId);
+                final String companyId = uri.getQueryParameter("companyId");
+
+
+                if ("echatdemo".equals(host)) {//拦截
+                    View root = View.inflate(context, R.layout.dialog_layout_order, null);
+                    BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
+                    bottomSheetDialog.setContentView(root);
+                    bottomSheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+
+                        }
+                    });
+                    bottomSheetDialog.show();
+                    final TextView priceTv = root.findViewById(R.id.pricetv);
+                    final TextView logisticsTv = root.findViewById(R.id.logisticsTv);
+                    root.findViewById(R.id.btn_send_visevt).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            JSONObject object = new JSONObject();
+                            String visevt = null;
+                            try {
+                                object.putOpt("eventId", "D97483381");
+                                object.putOpt("title", "订单号：D97483381");
+                                object.putOpt("content", "<div style=\\'color:#666;line-height:20px\\'>BADDIARY-2016秋季新款韩版高低摆连衣裙腰带套装</div><div style=\\'color:#666;line-height:20px\\'>金额：<span style=\\'color:red\\'>¥199.60</span></div><div style=\\'color:#666;line-height:20px\\'>物流：<span style=\\'color:#ccc\\'>买家已收货</span></div>");
+                                object.putOpt("imageUrl", "https://demo.echatsoft.com/web/html/demoMall/url/visitorUrl/myorder/images/1.jpg");
+                                object.putOpt("urlForVisitor", "http('https://demo.echatsoft.com/web/html/demoMall/url/staffUrl/myorder/order.asp?eventId=D97483381','inner')");
+                                object.putOpt("urlForStaff", "http('https://demo.echatsoft.com/web/html/demoMall/url/staffUrl/myorder/order.asp?eventId=D97483381','inner')");
+                                object.putOpt("memo", "下单时间：2018/12/03-10:30");
+                                visevt = object.toString();
+                                EChatUtils.sendVisEvt(context, companyId, metaData, visitorId, null, visevt, new EChatUtils.SendVisEvtCallback() {
+                                    @Override
+                                    public void onStatus(boolean flag) {
+
+                                    }
+                                });
+                            } catch (Exception e) {
+                            }
+
+                        }
+                    });
+                    priceTv.setText(Html.fromHtml("<font color='#000'>实付：</font><font color='#ff3366'> ¥199.60</font>"));
+                    logisticsTv.setText(Html.fromHtml("<font color='#000'>物流：</font>买家已收货"));
+
+                    ToastUtils.showLong("是echatdemo私有地址");
+                    LogUtils.i(uri);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     private void initLogutils() {

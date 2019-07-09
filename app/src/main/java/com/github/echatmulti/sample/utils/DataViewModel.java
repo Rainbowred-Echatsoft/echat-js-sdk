@@ -113,11 +113,12 @@ public class DataViewModel extends ViewModel {
     }
 
 
+
     public void makeNewMetadata() {
         Map<String, Object> metaDataMap = new HashMap<>();
         metaDataMap.put("uid", String.valueOf(deviceToken.getValue().hashCode()));
         final String metaData = EChatUtils.create2MetaData(metaDataMap, encodingKey.getValue(), appid.getValue());
-        metaDataOnlyUid.postValue(metaData);
+        metaDataOnlyUid.setValue(metaData);
         SPUtils.getInstance().put(METADATA_ONLY_UID, metaData);
     }
 
@@ -128,5 +129,14 @@ public class DataViewModel extends ViewModel {
         SPUtils.getInstance().put(METADATA_ONLY_UID, metaDataOnlyUid.getValue());
         SPUtils.getInstance().put(ENCODINGKEY, encodingKey.getValue());
         saveUnreadCount();
+    }
+
+    public void resetData() {
+        appid.setValue(APPID_DEFAULT);
+        token.setValue(TOKEN_DEFAULT);
+        encodingKey.setValue(ENCODINGKEY_DEFAULT);
+        companyId.setValue("12170");
+        makeNewMetadata();
+        saveData();
     }
 }

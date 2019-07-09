@@ -115,12 +115,9 @@ public class AesUtils {
         try {
             // 去除补位字符
             byte[] bytes = PKCS7Encoder.decode(original);
-
             // 分离16位随机字符串,网络字节序和AppId
             byte[] networkOrder = Arrays.copyOfRange(bytes, 16, 20);
-
             int xmlLength = recoverNetworkBytesOrder(networkOrder);
-
             xmlContent = new String(Arrays.copyOfRange(bytes, 20, 20 + xmlLength), CHARSET);
             from_appid = new String(Arrays.copyOfRange(bytes, 20 + xmlLength, bytes.length), CHARSET);
         } catch (Exception e) {

@@ -30,8 +30,8 @@ public interface Constants {
     int TYPE_NEW_MSG_FROM_CHAT = 17100;//来自对话中的新消息
     String EXTRA_BROWER_URL = "extra_brower_url";
 
-
     String SEND_VISEVT_APIURL = "https://eapi.echatsoft.com/pushVisitorEvent";
+    String GET_UNREAD_COUNT_APIURL = "https://eapi.echatsoft.com/getVisitorUnReadMsgCount";
 
     interface BroadcastPermission {
         String MESSAGE_RECEIVE_PERMISSION = "com.echat.chat.RECEIVE_PERMISSION";

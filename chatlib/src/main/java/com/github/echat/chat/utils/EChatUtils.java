@@ -3,8 +3,6 @@ package com.github.echat.chat.utils;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.widget.TextView;
-
 import com.github.echat.chat.utils.aes.AesUtils;
 
 import org.dom4j.Document;
@@ -17,6 +15,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.github.echat.chat.utils.Constants.GET_UNREAD_COUNT_APIURL;
+import static com.github.echat.chat.utils.RequestUtils.TYPE_GET;
 /**
  * @Author: xhy
  * @Email: xuhaoyang3x@gmail.com
@@ -116,6 +116,68 @@ public class EChatUtils {
 
     public interface SendVisEvtCallback {
         void onStatus(boolean flag);
+    }
+
+
+    /**
+     * 获得未读消息数
+     *
+     * @param companyId    公司ID 必须
+     * @param metaData     metaData/(visitorId/encryptVId) 二选一
+     * @param visitorId    metaData/(visitorId/encryptVId) 二选一
+     * @param encryptVId   metaData/(visitorId/encryptVId) 二选一
+     * @param callback
+     */
+    public static void getUnreadCount(@NonNull Context context,
+                                      @NonNull String companyId,
+                                      String metaData,
+                                      String visitorId,
+                                      String encryptVId,
+                                      GetUnreadCountCallback callback) {
+        if (TextUtils.isEmpty(companyId) || context == null)
+            return;
+        if ((TextUtils.isEmpty(visitorId) && TextUtils.isEmpty(metaData) && TextUtils.isEmpty(encryptVId)))
+            return;
+        RequestUtils.getInstance(context).requestAsyn(
+                GET_UNREAD_COUNT_APIURL,
+                TYPE_GET,
+                new HashMap<String, String>() {{
+                    put("companyId", companyId);
+                    if (!TextUtils.isEmpty(metaData)) put("metaData", metaData);
+                    if (!TextUtils.isEmpty(visitorId)) put("visitorId", visitorId);
+                    if (!TextUtils.isEmpty(encryptVId)) put("encryptVId", encryptVId);
+                }},
+                new RequestUtils.ReqCallBack<String>() {
+                    @Override
+                    public void onReqSuccess(String result) {
+                        try {
+                            JSONObject resutlObj = new JSONObject(result);
+                            if (resutlObj.optInt("errcode") == 0) {
+                                final int unreadMsgCount = resutlObj.optInt("unreadMsgCount");
+                                if (callback != null)
+                                    callback.onCountChange(unreadMsgCount);
+                            } else {
+                                if (callback != null)
+                                    callback.fail(resutlObj.optString("errmsg"));
+                            }
+                        } catch (JSONException e) {
+                            if (callback != null) callback.fail(e.getLocalizedMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onReqFailed(String errorMsg) {
+                        if (callback != null) callback.fail(errorMsg);
+                    }
+                }
+        );
+    }
+
+
+    public interface GetUnreadCountCallback {
+        void onCountChange(int count);
+
+        void fail(String msg);
     }
 
 

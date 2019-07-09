@@ -48,7 +48,7 @@ public class RequestUtils {
 
     private final static String TAG = RequestUtils.class.getSimpleName();
 
-    private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");//mdiatype 这个需要和服务端保持一致
+    private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");//mdiatype 这个需要和服务端保持一致
     private static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");//mdiatype 这个需要和服务端保持一致
     private static final MediaType MEDIA_OBJECT_STREAM = MediaType.parse("application/octet-stream");
     private static final MediaType MEDIA_FORM_DATA = MediaType.parse("multipart/form-data");

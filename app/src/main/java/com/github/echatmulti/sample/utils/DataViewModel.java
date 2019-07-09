@@ -5,27 +5,20 @@ import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.EncodeUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.github.echat.chat.utils.EChatUtils;
-import com.github.echat.chat.utils.RequestUtils;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.github.echat.chat.utils.RequestUtils.TYPE_GET;
 import static com.github.echatmulti.sample.utils.Constants.APPID;
 import static com.github.echatmulti.sample.utils.Constants.APPID_DEFAULT;
+import static com.github.echatmulti.sample.utils.Constants.COMPANY_ID;
 import static com.github.echatmulti.sample.utils.Constants.DEVICE_TOKEN_FUN;
 import static com.github.echatmulti.sample.utils.Constants.ENCODINGKEY;
 import static com.github.echatmulti.sample.utils.Constants.ENCODINGKEY_DEFAULT;
 import static com.github.echatmulti.sample.utils.Constants.METADATA_ONLY_UID;
-import static com.github.echatmulti.sample.utils.Constants.COMPANY_ID;
 import static com.github.echatmulti.sample.utils.Constants.TOKEN;
 import static com.github.echatmulti.sample.utils.Constants.TOKEN_DEFAULT;
 
@@ -82,37 +75,24 @@ public class DataViewModel extends ViewModel {
         if (TextUtils.isEmpty(metaDataOnlyUid.getValue())) {
             return;
         }
-        RequestUtils.getInstance(context).requestAsyn(
-                "http://e.echatsoft.com/chatapi/getVisitorUnReadMsgCount",
-                TYPE_GET,
-                new HashMap<String, String>() {{
-                    put("companyId", companyId.getValue());
-                    try {
-                        put("metaData", URLEncoder.encode(metaDataOnlyUid.getValue(), "UTF-8"));
-                    } catch (UnsupportedEncodingException e) {
-                    }
-                }},
-                new RequestUtils.ReqCallBack<String>() {
+        EChatUtils.getUnreadCount(context,
+               companyId.getValue(),
+                EncodeUtils.urlEncode(metaDataOnlyUid.getValue(), "UTF-8"),
+                null,
+                null,
+                new EChatUtils.GetUnreadCountCallback() {
                     @Override
-                    public void onReqSuccess(String result) {
-                        try {
-                            JSONObject object = new JSONObject(result);
-                            final int unreadMsgCount = object.optInt("unreadMsgCount");
-                            unReadRemoteCount.postValue(unreadMsgCount);
-                            saveUnreadCount();
-                        } catch (JSONException e) {
-                        }
+                    public void onCountChange(int count) {
+                        unReadCount.setValue(count);
                     }
 
                     @Override
-                    public void onReqFailed(String errorMsg) {
-                        LogUtils.e("errorMsg");
+                    public void fail(String msg) {
+
                     }
                 }
         );
     }
-
-
 
     public void makeNewMetadata() {
         Map<String, Object> metaDataMap = new HashMap<>();

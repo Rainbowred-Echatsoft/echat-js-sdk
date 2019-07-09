@@ -91,6 +91,7 @@ public class EChatUtils {
         if ((TextUtils.isEmpty(visitorId) && TextUtils.isEmpty(metaData) && TextUtils.isEmpty(encryptVId)))
             return;
         RequestUtils.getInstance(context).requestPostJsonByAsyn(Constants.SEND_VISEVT_APIURL, new HashMap<String, String>() {{
+            put("companyId", companyId);
             if (!TextUtils.isEmpty(metaData)) put("metaData", metaData);
             if (!TextUtils.isEmpty(visitorId)) put("visitorId", visitorId);
             if (!TextUtils.isEmpty(encryptVId)) put("encryptVId", encryptVId);
@@ -100,23 +101,29 @@ public class EChatUtils {
                 try {
                     JSONObject resutlObj = new JSONObject(result);
                     if (resutlObj.optInt("errcode") == 0) {
-                        if (callback != null) callback.onStatus(true);
+                        if (callback != null)
+                            callback.onStatus(true, resutlObj.optString("errmsg"));
+                    } else {
+                        if (callback != null)
+                            callback.onStatus(false, resutlObj.optString("errmsg"));
                     }
                 } catch (JSONException e) {
-                    if (callback != null) callback.onStatus(false);
+                    if (callback != null) callback.onStatus(false, e.getLocalizedMessage());
                 }
             }
 
             @Override
             public void onReqFailed(String errorMsg) {
-                if (callback != null) callback.onStatus(true);
+                if (callback != null) callback.onStatus(true, errorMsg);
             }
+
         });
     }
 
     public interface SendVisEvtCallback {
-        void onStatus(boolean flag);
+        void onStatus(boolean flag, String msg);
     }
+
 
 
     /**

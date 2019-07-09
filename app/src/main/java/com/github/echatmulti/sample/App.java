@@ -16,6 +16,8 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.LogUtils;
@@ -50,8 +52,13 @@ import static com.github.echat.chat.utils.Constants.ACTION_UNREAD_COUNT;
 import static com.github.echat.chat.utils.Constants.CHAT_LAST_CHAT_TIME;
 import static com.github.echat.chat.utils.Constants.CHAT_UNREAD_COUNT;
 import static com.github.echatmulti.sample.utils.Constants.ACTION_DEVICE_TOKEN;
+import static com.github.echatmulti.sample.utils.Constants.APPID;
+import static com.github.echatmulti.sample.utils.Constants.APPID_DEFAULT;
 import static com.github.echatmulti.sample.utils.Constants.DEVICE_TOKEN_FUN;
 import static com.github.echatmulti.sample.utils.Constants.LASTCHAT;
+import static com.github.echatmulti.sample.utils.Constants.METADATA_ONLY_UID;
+import static com.github.echatmulti.sample.utils.Constants.TOKEN;
+import static com.github.echatmulti.sample.utils.Constants.TOKEN_DEFAULT;
 import static com.github.echatmulti.sample.utils.Constants.UNREAD_COUNT;
 
 public class App extends Application {
@@ -79,6 +86,14 @@ public class App extends Application {
             }
         }
 
+        interceptOpenLink();
+
+    }
+
+    /**
+     * 处理一洽打开特定地址 调用原生发送图文消息
+     */
+    private void interceptOpenLink() {
         //拦截模块内的openLink
         EChatCore.getInstance().setCallback(new EChatCore.Callback() {
             @Override
@@ -86,15 +101,12 @@ public class App extends Application {
                 final Uri uri = Uri.parse(url);
                 LogUtils.i(uri);
                 final String host = uri.getHost();
-                final String metaData = uri.getQueryParameter("metaData");
-                LogUtils.i("metaData", metaData);
                 final String visitorId = uri.getQueryParameter("visitorId");
-                LogUtils.i("visitorId", visitorId);
                 final String companyId = uri.getQueryParameter("companyId");
-
 
                 if ("echatdemo".equals(host)) {//拦截
                     View root = View.inflate(context, R.layout.dialog_layout_order, null);
+
                     BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
                     bottomSheetDialog.setContentView(root);
                     bottomSheetDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -106,11 +118,30 @@ public class App extends Application {
                     bottomSheetDialog.show();
                     final TextView priceTv = root.findViewById(R.id.pricetv);
                     final TextView logisticsTv = root.findViewById(R.id.logisticsTv);
+                    final ImageView ivToolbarNavigation = (ImageView) root.findViewById(com.github.echat.chat.R.id.ivToolbarNavigation);
+                    final LinearLayout llToolbarClose = (LinearLayout) root.findViewById(com.github.echat.chat.R.id.llToolbarClose);
+                    priceTv.setText(Html.fromHtml("<font color='#000'>实付：</font><font color='#ff3366'> ¥199.60</font>"));
+                    logisticsTv.setText(Html.fromHtml("<font color='#000'>物流：</font>买家已收货"));
+                    //事件
+                    llToolbarClose.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            bottomSheetDialog.dismiss();
+                        }
+                    });
+                    ivToolbarNavigation.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            bottomSheetDialog.dismiss();
+                        }
+                    });
                     root.findViewById(R.id.btn_send_visevt).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             JSONObject object = new JSONObject();
-                            String visevt = null;
+                            final String appid = SPUtils.getInstance().getString(APPID, APPID_DEFAULT);
+                            final String token = SPUtils.getInstance().getString(TOKEN, TOKEN_DEFAULT);
+                            final String metaData = SPUtils.getInstance().getString(METADATA_ONLY_UID, null);
                             try {
                                 object.putOpt("eventId", "D97483381");
                                 object.putOpt("title", "订单号：D97483381");
@@ -119,29 +150,28 @@ public class App extends Application {
                                 object.putOpt("urlForVisitor", "http('https://demo.echatsoft.com/web/html/demoMall/url/staffUrl/myorder/order.asp?eventId=D97483381','inner')");
                                 object.putOpt("urlForStaff", "http('https://demo.echatsoft.com/web/html/demoMall/url/staffUrl/myorder/order.asp?eventId=D97483381','inner')");
                                 object.putOpt("memo", "下单时间：2018/12/03-10:30");
-                                visevt = object.toString();
-                                EChatUtils.sendVisEvt(context, companyId, metaData, visitorId, null, visevt, new EChatUtils.SendVisEvtCallback() {
+                                EChatUtils.sendVisEvt(context, companyId, URLEncoder.encode(metaData, "UTF-8"), null, null, object.toString(), new EChatUtils.SendVisEvtCallback() {
                                     @Override
-                                    public void onStatus(boolean flag) {
-
+                                    public void onStatus(boolean flag, String message) {
+                                        if (flag) {
+                                            bottomSheetDialog.dismiss();
+                                        } else {
+                                            ToastUtils.showShort("发送失败: " + message);
+                                        }
                                     }
                                 });
                             } catch (Exception e) {
                             }
-
                         }
                     });
-                    priceTv.setText(Html.fromHtml("<font color='#000'>实付：</font><font color='#ff3366'> ¥199.60</font>"));
-                    logisticsTv.setText(Html.fromHtml("<font color='#000'>物流：</font>买家已收货"));
 
-                    ToastUtils.showLong("是echatdemo私有地址");
-                    LogUtils.i(uri);
                     return true;
                 }
                 return false;
             }
         });
     }
+
 
     private void initLogutils() {
 

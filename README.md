@@ -68,7 +68,18 @@ metadata 客户加密数据用于业务系统会员对接，请参阅[Echat-业�
 - `com.github.echat.chat.EChatFragment.handleChatStatus() /handleVisitorEvaluate()`处理访客对话状态变更 UI以及页面行为变更
 - `com.github.echat.chat.EChatFragment.closeChatView()` 关闭对话窗口(并通知一洽JS断开连接)
 
-- `com.github.echat.chat.EChatFragment.onPageFinished`接管图片浏览/视频播放/打开网页 需主动告知H5，请参考onPageFinished方法
+上述接管功能，需APP主动告知JS，请参考以下方法
+- `com.github.echat.chat.EChatFragment.onPageFinished`
+
+#### openLinkV2 接管打开连接
+
+可打开半屏原生界面，发送图文消息(订单等)。
+
+<img src="img/sendvisevt.png" width="400" >
+
+
+
+请参考`com.github.echatmulti.sample.App.interceptOpenLink`方法实现内容，和`com.github.echat.chat.EChatFragment`搜索`openLinkV2`查看实现内容
 
 ### 自定义
 完全导入chatlib library，该项目gradle带有图库选择器，图库浏览，视频播放等，开发者可将预制功能换成开发者项目中已有。
@@ -144,7 +155,6 @@ public class NotificationReceiver extends BroadcastReceiver {
                             put(EXTRA_CHAT_URL, chatUrl);
                         }});
             }
-
         }
         //接受未读消息数变更
         else if (Constants.ACTION_UNREAD_COUNT.equals(action)) {
@@ -168,3 +178,57 @@ public class NotificationReceiver extends BroadcastReceiver {
 实现远程消息，可参考Demo `com.github.echatmulti.sample.App`中搜索`dealWithNotificationMessage`方法
 
 远程消息下发，带上服务器提供的消息时间戳，即可比对最后一次对话时间，避免远程消息延迟到达，导致的重复通知。
+
+### 获得未读消息数
+
+指通过一洽提供HTTP API 获得某访客在某公司/商户的未读消息数。
+
+请参考`com.github.echat.chat.utils.EChatUtils`中
+
+```java
+		/**
+     * 获得未读消息数
+     *
+     * @param companyId    公司ID 必须
+     * @param metaData     metaData/(visitorId/encryptVId) 二选一
+     * @param visitorId    metaData/(visitorId/encryptVId) 二选一
+     * @param encryptVId   metaData/(visitorId/encryptVId) 二选一
+     * @param callback
+     */
+    public static void getUnreadCount(@NonNull Context context,
+                                      @NonNull String companyId,
+                                      String metaData,
+                                      String visitorId,
+                                      String encryptVId,
+                                      GetUnreadCountCallback callback)
+```
+
+API文档请参阅 [一洽客服系统访客端API-HTTP接口](http://doc.echatsoft.com/api/visitor/httpAPI.html)
+
+### 发送图文消息
+
+指通过一洽提供HTTP API ，在访客对话过程中，通过HTTP请求发送图文消息。
+
+请参考`com.github.echat.chat.utils.EChatUtils`中
+
+```java
+		/**
+     * 发送图文消息
+     *
+     * @param companyId    公司ID 必须
+     * @param metaData     metaData/(visitorId/encryptVId) 二选一
+     * @param visitorId    metaData/(visitorId/encryptVId) 二选一
+     * @param encryptVId   metaData/(visitorId/encryptVId) 二选一
+     * @param visEvtJSON   图文消息JSON 必须
+     * @param callback
+     */
+    public static void sendVisEvt(@NonNull Context context,
+                                  @NonNull String companyId,
+                                  String metaData,
+                                  String visitorId,
+                                  String encryptVId,
+                                  @NonNull String visEvtJSON,
+                                  SendVisEvtCallback callback)
+```
+
+API文档请参阅 [一洽客服系统访客端API-HTTP接口](http://doc.echatsoft.com/api/visitor/httpAPI.html)

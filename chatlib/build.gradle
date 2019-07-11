@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
 
 android {
     compileSdkVersion 28
@@ -8,7 +9,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0-professional"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -63,4 +64,13 @@ dependencies {
     api 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.4'
     api 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.4'
     api 'com.blankj:utilcode:1.23.7'
+}
+
+publish {
+    userOrg = 'echat'
+    groupId = 'com.echatsoft.jsapp'
+    artifactId = 'chatlib'
+    publishVersion = android.defaultConfig.versionName 
+    desc = 'i am jsapp chat library'
+    website = 'https://gitee.com/rainbowred/js-app-android-professional-demo'
 }

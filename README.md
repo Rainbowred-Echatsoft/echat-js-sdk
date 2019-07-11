@@ -1,8 +1,30 @@
 # 一洽客服  Android快速接入模块
 
+![](https://img.shields.io/badge/build-passing-brightgreen.svg)[![](https://img.shields.io/badge/Download-1.0.0--professional-blue.svg)](https://bintray.com/beta/#/echat/maven/chatlib/1.0.0-professional)
+
 为方便开发者快速接入，提供封装好的模块`chatlib`，可直接导入至工程 或 通过 `Gradle`接入，两者区别前者适合开发者有较多定制修改需求，后者适合快速接入无需大量定制。
 
+#### Gradle
+
+```groovy
+repositories {
+    jcenter()
+    //or
+    maven { url 'https://dl.bintray.com/echat/maven' }
+}
+
+dependencies {
+    implementation 'com.echatsoft.jsapp:chatlib::$latest_version'
+}
+
+```
+
+#### 导入module
+
+Android Studio - File - New - Import Module，选择chatlib文件夹
+
 更多关于接入文档，请浏览[一洽JSAPP-Android集成](http://doc.echatsoft.com/api/sdk/js-app/#!android/quickstart.md)
+
 
 
 

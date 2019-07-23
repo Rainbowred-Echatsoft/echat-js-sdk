@@ -34,6 +34,7 @@ import com.umeng.message.MsgConstant;
 import com.umeng.message.PushAgent;
 import com.umeng.message.UmengMessageHandler;
 import com.umeng.message.entity.UMessage;
+import com.uuzuche.lib_zxing.activity.ZXingLibrary;
 
 import org.android.agoo.huawei.HuaWeiRegister;
 import org.android.agoo.xiaomi.MiPushRegistar;
@@ -72,6 +73,9 @@ public class App extends Application {
         super.onCreate();
         handler = new Handler(Looper.getMainLooper());
         initLogutils();
+
+        //二维码
+        ZXingLibrary.initDisplayOpinion(this);
 
         //初始化通知
         RemoteNotificationUtils.initNotificationChannel(this);

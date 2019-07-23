@@ -106,6 +106,9 @@ dependencies {
     implementation 'com.gyf.immersionbar:immersionbar:2.3.3'
 
 
+    // 二维码扫描
+    implementation 'cn.yipianfengye.android:zxing-library:2.2'
+
     // 网络请求库
     implementation 'com.squareup.okhttp3:okhttp:3.12.1'
 

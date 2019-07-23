@@ -129,6 +129,20 @@
             android:layout_height="wrap_content"
             android:text="保存" />
 
+        <Button
+            android:id="@+id/btn_qr"
+            style="@style/EChatButton.Item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="二维码修改" />
+
+        <Button
+            android:id="@+id/btn_reset"
+            style="@style/EChatButton.Item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="还原默认" />
 
     </LinearLayout>
 </ScrollView>

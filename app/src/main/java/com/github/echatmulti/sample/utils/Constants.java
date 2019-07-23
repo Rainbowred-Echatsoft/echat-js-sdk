@@ -37,4 +37,5 @@ public interface Constants {
     int HANDLER_WHAT_BACK = 10001;//处理后退
     int HANDLER_WHAT_DATA_HANDLE = 10002;//处理数据
 
+    int RESULT_CODE_SETTINGS_QR = 17001;
 }

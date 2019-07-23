@@ -30,7 +30,7 @@
 
 
     <style name="SettingItem">
-        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginTop">12dp</item>
         <item name="android:layout_marginRight">16dp</item>
         <item name="android:layout_marginLeft">24dp</item>
     </style>

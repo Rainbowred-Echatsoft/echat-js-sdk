@@ -1,6 +1,5 @@
 package com.github.echatmulti.sample;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -75,16 +74,10 @@ public class VisEvtFragment extends BaseLazyFragment implements FragmentUtils.On
             Glide.with(getContext()).load(R.mipmap.cook1003_1).into(imageView);
         }
 
-        findViewById(R.id.btn_open_chat).setOnClickListener(this::onDebouncingClick);
-
-
-        viewModel.whoOpenChat.observe(this, new Observer<Integer>() {
+        findViewById(R.id.btn_open_chat).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onChanged(@Nullable Integer integer) {
-                if (num == integer) {
-                    openChat();
-
-                }
+            public void onClick(View v) {
+                openChat();
             }
         });
     }
@@ -92,12 +85,9 @@ public class VisEvtFragment extends BaseLazyFragment implements FragmentUtils.On
 
     @Override
     public void onDebouncingClick(@NonNull View view) {
-        if (view.getId() == R.id.btn_open_chat) {
-            openChat();
-        }
     }
 
-    private void openChat() {
+     void openChat() {
         RemoteNotificationUtils.cancelAll(getContext());
         String visevt = null;
         String companyId = viewModel.companyId.getValue();

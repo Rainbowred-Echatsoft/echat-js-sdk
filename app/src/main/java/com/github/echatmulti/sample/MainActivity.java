@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SPUtils;
+import com.github.echat.chat.EChatActivity;
 import com.github.echat.chat.utils.Constants;
 import com.github.echatmulti.sample.ui.MenuItemBadge;
 import com.github.echatmulti.sample.ui.SpecialTab;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
     int[] testColors = {0xFF455A64, 0xFF00796B, 0xFF795548, 0xFF5B4947, 0xFFF57C00};
     private MenuItem notificationItem;
+    private MainViewPagerAdpater adapter;
 
 
     @Override
@@ -85,7 +87,8 @@ public class MainActivity extends AppCompatActivity {
                 .addItem(newItem(R.mipmap.ic_settings_default, R.mipmap.ic_settings_selected, "设置"))
                 .build();
 
-        viewPager.setAdapter(new MainViewPagerAdpater(getSupportFragmentManager(), mNavigationController.getItemCount()));
+        adapter = new MainViewPagerAdpater(getSupportFragmentManager(), mNavigationController.getItemCount());
+        viewPager.setAdapter(adapter);
 
         //自动适配ViewPager页面切换
         mNavigationController.setupWithViewPager(viewPager);
@@ -197,9 +200,26 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         if (id == R.id.action_notifications) {
             RemoteNotificationUtils.cancelAll(this);
-            dataViewModel.whoOpenChat.postValue(page);
+            if (page != 1) {
+                openChat();
+            } else {
+                final VisEvtFragment visEvtFragment = (VisEvtFragment)adapter.getFragments().get(page);
+                visEvtFragment.openChat();
+            }
         }
         return true;
+    }
+
+    private void openChat() {
+        RemoteNotificationUtils.cancelAll(this);
+        EChatActivity.openChat(
+                this,
+                dataViewModel.companyId.getValue(),
+                dataViewModel.deviceToken.getValue(),
+                dataViewModel.metaDataOnlyUid.getValue(),
+                null,
+                "app_android"
+        );
     }
 
     private DataViewModel initViewModel() {
@@ -251,6 +271,10 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public int getCount() {
             return size;
+        }
+
+        public List<Fragment> getFragments() {
+            return mFragments;
         }
     }
 

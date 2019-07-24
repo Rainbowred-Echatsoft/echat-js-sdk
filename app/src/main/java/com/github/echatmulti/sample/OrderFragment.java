@@ -77,30 +77,10 @@ public class OrderFragment extends BaseLazyFragment implements FragmentUtils.OnB
         priceTv.setText(Html.fromHtml("<font color='#000'>实付：</font><font color='#ff3366'> ¥199.60</font>"));
         logisticsTv.setText(Html.fromHtml("<font color='#000'>物流：</font>买家已收货"));
 
-        viewModel.whoOpenChat.observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable Integer integer) {
-                if (2 == integer) {
-                    openChat();
-                }
-            }
-        });
     }
 
     @Override
     public void onDebouncingClick(@NonNull View view) {
-    }
-
-    private void openChat() {
-        RemoteNotificationUtils.cancelAll(getContext());
-        EChatActivity.openChat(
-                getContext(),
-                viewModel.companyId.getValue(),
-                viewModel.deviceToken.getValue(),
-                viewModel.metaDataOnlyUid.getValue(),
-                null,
-                "app_android"
-        );
     }
 
     private void openChatByOrder() {

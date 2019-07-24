@@ -63,14 +63,7 @@ public class HomeFragment extends BaseLazyFragment implements FragmentUtils.OnBa
     @Override
     public void initView(@Nullable Bundle savedInstanceState, @Nullable View contentView) {
         findViewById(R.id.btn_open_chat).setOnClickListener(this::onDebouncingClick);
-        viewModel.whoOpenChat.observe(this, new Observer<Integer>() {
-            @Override
-            public void onChanged(@Nullable Integer integer) {
-                if (integer == 0) {
-                    openChat();
-                }
-            }
-        });
+
     }
 
     @Override

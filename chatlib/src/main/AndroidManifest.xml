@@ -4,25 +4,6 @@
 
     <uses-sdk tools:overrideLibrary="tv.danmaku.ijk.media.player_arm64" />
 
-    <!--Android 8.0 注册静态广播接受 必须设置权限/packageName 才能收到消息-->
-    <!-- 声明接收权限 -->
-    <permission
-        android:name="com.echat.chat.RECEIVE_PERMISSION"
-        android:protectionLevel="signature" />
-    <!-- 使用发送权限 -->
-    <uses-permission
-        android:name="com.echat.chat.SEND_PERMISSION"
-        android:protectionLevel="signature" />
-
-    <!-- 声明发送权限 -->
-    <permission
-        android:name="com.echat.chat.SEND_PERMISSION"
-        android:protectionLevel="signature" />
-    <!-- 使用接收权限 -->
-    <uses-permission
-        android:name="com.echat.chat.RECEIVE_PERMISSION"
-        android:protectionLevel="signature" />
-
     <application>
 
         <activity

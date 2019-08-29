@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.blankj.utilcode.util.ClickUtils;
 
 
 public abstract class BaseFragment extends Fragment
@@ -23,13 +22,6 @@ public abstract class BaseFragment extends Fragment
 
     private static final String TAG = "BaseFragment";
     private static final String STATE_SAVE_IS_HIDDEN = "STATE_SAVE_IS_HIDDEN";
-
-    private ClickUtils.OnDebouncingClickListener mDebouncingClick = new ClickUtils.OnDebouncingClickListener() {
-        @Override
-        public void onDebouncingClick(View v) {
-            BaseFragment.this.onDebouncingClick(v);
-        }
-    };
 
     protected Activity mActivity;
     protected LayoutInflater mInflater;
@@ -109,11 +101,6 @@ public abstract class BaseFragment extends Fragment
     public void onDestroy() {
         Log.d(TAG, "onDestroy: ");
         super.onDestroy();
-    }
-
-    public void applyDebouncingClickListener(View... views) {
-        ClickUtils.applyGlobalDebouncing(views, 0,mDebouncingClick);
-        ClickUtils.applyScale(views, new float[]{-0.5f});
     }
 
     public <T extends View> T findViewById(@IdRes int id) {

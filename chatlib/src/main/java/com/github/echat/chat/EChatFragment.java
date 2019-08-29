@@ -1387,7 +1387,8 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             bundle.putInt(CHAT_UNREAD_COUNT, unreadMsgCount);
             intent.putExtras(bundle);
             intent.setAction(ACTION_NEW_MSG);
-            getWActivity().sendBroadcast(intent, Constants.BroadcastPermission.MESSAGE_RECEIVE_PERMISSION);
+            intent.setPackage(getWActivity().getPackageName());
+            getWActivity().sendBroadcast(intent);
         }
     }
 
@@ -1398,7 +1399,8 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         bundle.putLong(CHAT_LAST_CHAT_TIME, lastChatTime);
         intent.putExtras(bundle);
         intent.setAction(ACTION_UNREAD_COUNT);
-        getWActivity().sendBroadcast(intent, Constants.BroadcastPermission.MESSAGE_RECEIVE_PERMISSION);
+        intent.setPackage(getWActivity().getPackageName());
+        getWActivity().sendBroadcast(intent);
     }
 
 

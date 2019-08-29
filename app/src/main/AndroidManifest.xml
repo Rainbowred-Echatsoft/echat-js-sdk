@@ -23,7 +23,6 @@
 
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
-
     <!-- SDK权限 -->
     <application
         android:name=".App"
@@ -39,6 +38,7 @@
         <meta-data
             android:name="com.huawei.hms.client.appid"
             android:value="${HUAWEI_PUSH}" />
+
         <activity
             android:name=".HandleMessageActivity"
             android:launchMode="singleTask"
@@ -66,8 +66,7 @@
         <receiver
             android:name=".utils.NotificationReceiver"
             android:enabled="true"
-            android:exported="false"
-            android:permission="com.echat.chat.SEND_PERMISSION">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.echat.chat.action.NEW_MSG" />
                 <action android:name="com.echat.chat.action.UNREAD_COUNT" />

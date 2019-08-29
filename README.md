@@ -1,6 +1,6 @@
 # 一洽客服  Android快速接入模块
 
-![](https://img.shields.io/badge/build-passing-brightgreen.svg)[![](https://img.shields.io/badge/Download-1.0.0--professional-blue.svg)](https://bintray.com/beta/#/echat/maven/chatlib/1.0.0-professional)
+![](https://img.shields.io/badge/build-passing-brightgreen.svg)[![](https://img.shields.io/badge/Download-1.0.1--professional-blue.svg)](https://bintray.com/beta/#/echat/maven/chatlib/1.0.1-professional)
 
 为方便开发者快速接入，提供封装好的模块`chatlib`，可直接导入至工程 或 通过 `Gradle`接入，两者区别前者适合开发者有较多定制修改需求，后者适合快速接入无需大量定制。
 
@@ -129,14 +129,15 @@ metadata 客户加密数据用于业务系统会员对接，请参阅[Echat-业�
 #### 本地消息
 将通过广播的形式，通知到外部。
 
-Android 8.0 静态Receiver无法接受到消息，这里采用双向自定义权限，即可接收。
+Android 8.0 静态Receiver无法接受到隐式广播消息，~~这里采用双向自定义权限~~，即可接收。
+
+2019-08-29：考虑到设置自定义权限后，会导致设置同样权限不同签名APP无法安装，故改成显式广播。1.0.0版本的用户，更新后请删除receiver的权限。
 
 ```
 <receiver
             android:name=".utils.NotificationReceiver"
             android:enabled="true"
-            android:exported="false"
-            android:permission="com.echat.chat.SEND_PERMISSION">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.echat.chat.action.NEW_MSG" />
                 <action android:name="com.echat.chat.action.UNREAD_COUNT" />

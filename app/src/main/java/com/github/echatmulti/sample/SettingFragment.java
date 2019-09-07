@@ -100,10 +100,10 @@ public class SettingFragment extends BaseLazyFragment implements FragmentUtils.O
     @Override
     public void onDebouncingClick(@NonNull View view) {
         if (view.getId() == R.id.btn_save) {
-            dataViewModel.appid.postValue(edAppid.getText().toString());
-            dataViewModel.token.postValue(edToken.getText().toString());
-            dataViewModel.companyId.postValue(edCompanyid.getText().toString());
-            dataViewModel.encodingKey.postValue(edEncodingKey.getText().toString());
+            dataViewModel.appid.setValue(edAppid.getText().toString());
+            dataViewModel.token.setValue(edToken.getText().toString());
+            dataViewModel.companyId.setValue(edCompanyid.getText().toString());
+            dataViewModel.encodingKey.setValue(edEncodingKey.getText().toString());
             dataViewModel.makeNewMetadata();
             dataViewModel.saveData();
             ToastUtils.showShort("save successful");

@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (Constants.ACTION_UNREAD_COUNT.equals(action)) {
                 int notificationCount = bundle.getInt(CHAT_UNREAD_COUNT);
-                dataViewModel.unReadCount.postValue(notificationCount);
+                dataViewModel.unReadCount.setValue(notificationCount);
                 dataViewModel.saveUnreadCount();
             }
         }

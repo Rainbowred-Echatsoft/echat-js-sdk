@@ -59,8 +59,8 @@ public class DataViewModel extends ViewModel {
     public void loadUnreadCount() {
         final int count = SPUtils.getInstance().getInt(Constants.UNREAD_COUNT);
         final int remoteCount = SPUtils.getInstance().getInt(Constants.REMOTE_UNREAD_COUNT);
-        unReadRemoteCount.postValue(remoteCount);
-        unReadCount.postValue(count);
+        unReadRemoteCount.setValue(remoteCount);
+        unReadCount.setValue(count);
     }
 
     public void saveUnreadCount() {

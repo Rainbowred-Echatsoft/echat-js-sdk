@@ -52,12 +52,12 @@ dependencies {
     //图库
     api 'com.echatsoft.echatsdk:imagepicker:1.0.1-beta3'//支持Android 10
     // 微信拍照
-    api 'com.echatsoft.echatsdk:cameralibrary:1.0.0-beta1'
+    api 'com.echatsoft.echatsdk:cameralibrary:1.0.0-beta5'
     // 网络请求库
     compileOnly 'com.squareup.okhttp3:okhttp:3.12.1'
 
 
-    api 'com.echatsoft.echatsdk:videoplayer:1.0.0-beta2'
+    api 'com.echatsoft.echatsdk:videoplayer:1.0.0-beta3'
     api 'tv.danmaku.ijk.media:ijkplayer-java:0.8.4'
     api 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.4'
     api 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.4'

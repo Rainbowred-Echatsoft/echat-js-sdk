@@ -30,9 +30,9 @@ public class JZMediaIjkplayer extends JZMediaInterface implements IMediaPlayer.O
     @Override
     public void prepare() {
         ijkMediaPlayer = new IjkMediaPlayer();
-        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1);
-        }else {
+        } else {
             ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0);
         }
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 0);
@@ -52,7 +52,7 @@ public class JZMediaIjkplayer extends JZMediaInterface implements IMediaPlayer.O
         ijkMediaPlayer.setOnTimedTextListener(JZMediaIjkplayer.this);
 
         try {
-            ijkMediaPlayer.setDataSource(currentDataSource.toString());
+            ijkMediaPlayer.setDataSource(jzDataSource.getCurrentUrl().toString());
             ijkMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             ijkMediaPlayer.setScreenOnWhilePlaying(true);
             ijkMediaPlayer.prepareAsync();
@@ -105,7 +105,7 @@ public class JZMediaIjkplayer extends JZMediaInterface implements IMediaPlayer.O
     @Override
     public void onPrepared(IMediaPlayer iMediaPlayer) {
         ijkMediaPlayer.start();
-        if (currentDataSource.toString().toLowerCase().contains("mp3")) {
+        if (jzDataSource.getCurrentUrl().toString().toLowerCase().contains("mp3")) {
             JZMediaManager.instance().mainThreadHandler.post(new Runnable() {
                 @Override
                 public void run() {

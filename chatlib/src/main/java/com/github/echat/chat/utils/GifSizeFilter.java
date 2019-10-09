@@ -18,11 +18,12 @@ package com.github.echat.chat.utils;
 import android.content.Context;
 import android.graphics.Point;
 
-import com.zhihu.matisse.MimeType;
-import com.zhihu.matisse.filter.Filter;
-import com.zhihu.matisse.internal.entity.IncapableCause;
-import com.zhihu.matisse.internal.entity.Item;
-import com.zhihu.matisse.internal.utils.PhotoMetadataUtils;
+
+import com.echat.matisse.MimeType;
+import com.echat.matisse.filter.Filter;
+import com.echat.matisse.internal.entity.IncapableCause;
+import com.echat.matisse.internal.entity.Item;
+import com.echat.matisse.internal.utils.PhotoMetadataUtils;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
 //        applicationId "com.github.echatmulti.sample"
         applicationId "com.echat.echatjsdemo"//申请推送SDK请更名这个id
 
         minSdkVersion 15
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0.0.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

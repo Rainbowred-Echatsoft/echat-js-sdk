@@ -266,7 +266,6 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             }});
         }
 
-
     }
 
     private void initBaseUI(Bundle savedInstanceState) {
@@ -448,8 +447,13 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         }
     }
 
-    public void clearHistory() {
-        mWebView.clearHistory();
+    private void clearHistory() {
+        if (mWebView != null) {
+            try {
+                mWebView.clearHistory();
+            } catch (Exception e) {
+            }
+        }
     }
 
     /**
@@ -607,9 +611,11 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     private void openDownloadedAttachment(final Context context, Uri attachmentUri, final String attachmentMimeType) {
         if (attachmentUri != null) {
             // Get Content Uri.
+            String filePath = null;
             if (ContentResolver.SCHEME_FILE.equals(attachmentUri.getScheme())) {
                 // FileUri - Convert it to contentUri.
                 File file = new File(attachmentUri.getPath());
+                filePath = file.getAbsolutePath();
                 attachmentUri = FileProvider.getUriForFile(getWActivity(), context.getPackageName() + ".fileprovider", file);
             }
             Intent openAttachmentIntent = new Intent(Intent.ACTION_VIEW);
@@ -618,7 +624,9 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             try {
                 context.startActivity(openAttachmentIntent);
             } catch (ActivityNotFoundException e) {
-                ToastUtils.showLong("打开文件错误");
+                LogUtils.eTag(TAG, e);
+                LogUtils.iTag(TAG, "下载的文件：" + attachmentUri.toString());
+                ToastUtils.showLong("打开文件错误，下载至" + filePath);
             }
         }
     }
@@ -766,7 +774,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             public void run() {
                 callJs(mWebView, "setMediaPlayer", mediaOption);
                 callJs(mWebView, "setLinkOpener", openOption);
-                mWebView.clearHistory();
+                clearHistory();
             }
         }, 500);
     }

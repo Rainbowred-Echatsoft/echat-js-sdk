@@ -90,7 +90,7 @@ public class EChatActivity extends AppCompatActivity {
      * @param metaData     客户加密数据
      * @param visEvt       图文消息
      */
-    public static void openChat(Context context, String companyId, String pushInfo, String metaData, String visEvt, String echatTag) {
+    public static void openChat(Context context, String companyId, String pushInfo, String metaData, String visEvt, String echatTag, String routeEntranceId) {
         Intent intent = new Intent(context, EChatActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(Constants.COMPANY_ID, companyId);
@@ -98,6 +98,7 @@ public class EChatActivity extends AppCompatActivity {
         bundle.putString(Constants.METADATA, metaData);
         bundle.putString(Constants.VISEVT, visEvt);
         bundle.putString(Constants.ECHATTAG, echatTag);
+        bundle.putString(Constants.ROUTEENTRANCEID, routeEntranceId);
         bundle.putString(Constants.TYPE, Constants.TYPE_CHAT);
         intent.putExtras(bundle);
         context.startActivity(intent);

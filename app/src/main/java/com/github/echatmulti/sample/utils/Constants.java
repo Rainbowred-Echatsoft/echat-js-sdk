@@ -24,6 +24,8 @@ public interface Constants {
     String UNREAD_COUNT = "chat_unread_count";
     String REMOTE_UNREAD_COUNT = "chat_remote_unread_count";
 
+    String STATUSBAR_COLOR = "StatusBarColor";
+
 
     String COMPANY_ID = "company_id";
 
@@ -34,7 +36,6 @@ public interface Constants {
 
     String ACTION_DEVICE_TOKEN = "com.github.echatmulti.action.devicetoken";
     String DEVICE_TOKEN_FUN = "deviceToken";//broadcast or sp
-
 
     int HANDLER_WHAT_BACK = 10001;//处理后退
     int HANDLER_WHAT_DATA_HANDLE = 10002;//处理数据

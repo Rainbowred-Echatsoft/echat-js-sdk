@@ -50,8 +50,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.github.echat.chat.utils.Constants.ACTION_UNREAD_COUNT;
+import static com.github.echat.chat.utils.Constants.ACTION_UPDATE_LAST_CONTENT;
 import static com.github.echat.chat.utils.Constants.CHAT_LAST_CHAT_TIME;
 import static com.github.echat.chat.utils.Constants.CHAT_UNREAD_COUNT;
+import static com.github.echat.chat.utils.Constants.NOTIFICATION_LAST_CONTENT;
 import static com.github.echatmulti.sample.utils.Constants.ACTION_DEVICE_TOKEN;
 import static com.github.echatmulti.sample.utils.Constants.APPID;
 import static com.github.echatmulti.sample.utils.Constants.APPID_DEFAULT;
@@ -253,7 +255,7 @@ public class App extends Application {
                     bundle.putLong(CHAT_LAST_CHAT_TIME, echatTimeStamp);
                     intent.putExtras(bundle);
                     intent.setAction(ACTION_UNREAD_COUNT);
-                    sendBroadcast(intent, Constants.BroadcastPermission.MESSAGE_RECEIVE_PERMISSION);
+                    sendBroadcast(intent);
 
                     notification
                             .setNotificationId(Integer.parseInt(chatCompanyId))
@@ -262,6 +264,17 @@ public class App extends Application {
                                 put(Constants.EXTRA_CHAT_URL, echatUrl);
                                 put(Constants.EXTRA_COMPANY_ID, chatCompanyId);
                             }});
+                }
+
+                LogUtils.iTag(TAG, "收到远程推送: 把content：" + uMessage.text + ", 存储到本地 用于消息列表显示");
+                if (!TextUtils.isEmpty(uMessage.text)) {
+                    SPUtils.getInstance().put(NOTIFICATION_LAST_CONTENT, uMessage.text);
+                    Intent intent = new Intent();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(NOTIFICATION_LAST_CONTENT, uMessage.text);
+                    intent.putExtras(bundle);
+                    intent.setAction(ACTION_UPDATE_LAST_CONTENT);
+                    sendBroadcast(intent);
                 }
 
                 LogUtils.d(TAG, "这是友盟消息推送 回调：" + uMessage.getRaw().toString());

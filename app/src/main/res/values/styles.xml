@@ -79,6 +79,11 @@
         <item name="android:layout_marginLeft">16dp</item>
     </style>
 
+    <style name="MessageLayout">
+        <item name="android:background">#fefefe</item>
+        <item name="android:clickable">true</item>
+    </style>
+
     <style name="MessageItem">
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:layout_marginBottom">8dp</item>
@@ -98,6 +103,20 @@
         <item name="android:layout_gravity">center</item>
         <item name="android:textColor">#000</item>
         <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="MessageItem.Text.NotificationTitle">
+        <item name="android:layout_gravity">left</item>
+        <item name="android:textColor">#000</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="MessageItem.Text.NotificationContent">
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:layout_gravity">left</item>
+        <item name="android:textColor">@android:color/darker_gray</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="MessageItem.TextNum">

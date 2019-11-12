@@ -63,7 +63,6 @@ import com.blankj.utilcode.util.PathUtils;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.echat.cameralibrary.util.LogUtil;
 import com.echat.jzvd.JZVideoPlayer;
 import com.echat.jzvd.JZVideoPlayerStandard;
 import com.echat.matisse.Matisse;
@@ -101,12 +100,13 @@ import static com.github.echat.chat.utils.Constants.ACTION_UNREAD_COUNT;
 import static com.github.echat.chat.utils.Constants.CHAT_LAST_CHAT_TIME;
 import static com.github.echat.chat.utils.Constants.CHAT_UNREAD_COUNT;
 import static com.github.echat.chat.utils.Constants.COMPANY_ID;
+import static com.github.echat.chat.utils.Constants.ECHATTAG;
 import static com.github.echat.chat.utils.Constants.METADATA;
 import static com.github.echat.chat.utils.Constants.PUSH_INFO;
+import static com.github.echat.chat.utils.Constants.ROUTEENTRANCEID;
 import static com.github.echat.chat.utils.Constants.SP_LAST_CHAT_TIME;
 import static com.github.echat.chat.utils.Constants.TYPE;
 import static com.github.echat.chat.utils.Constants.TYPE_CHAT;
-import static com.github.echat.chat.utils.Constants.ECHATTAG;
 import static com.github.echat.chat.utils.Constants.VISEVT;
 
 
@@ -252,6 +252,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             metaData = bundle.getString(METADATA);
             visEvt = bundle.getString(VISEVT);
             echatTag = bundle.getString(ECHATTAG);
+            routeEntranceId = bundle.getString(ROUTEENTRANCEID);
             String type = bundle.getString(TYPE);
             LogUtils.i(String.format("visEvt:%s ", visEvt));
             if (TYPE_CHAT.equals(type)) {
@@ -263,6 +264,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                 if (!TextUtils.isEmpty(metaData)) put("metaData", metaData);
                 if (!TextUtils.isEmpty(visEvt)) put("visEvt", visEvt);
                 if (!TextUtils.isEmpty(echatTag)) put("echatTag", echatTag);
+                if (!TextUtils.isEmpty(routeEntranceId)) put("routeEntranceId", routeEntranceId);
             }});
         }
 
@@ -1118,6 +1120,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     private String metaData;
     private String visEvt;
     private String echatTag;
+    private String routeEntranceId;
 
 
     private String visitorId;//访客id

@@ -7,6 +7,7 @@ public interface Constants {
     String METADATA = "metaData";
     String VISEVT = "visEvt";
     String ECHATTAG = "echatTag";
+    String ROUTEENTRANCEID = "routeEntranceId";
     String TYPE = "type";
     String TYPE_CHAT = "chat";
 
@@ -32,6 +33,9 @@ public interface Constants {
 
     String SEND_VISEVT_APIURL = "https://eapi.echatsoft.com/pushVisitorEvent";
     String GET_UNREAD_COUNT_APIURL = "https://eapi.echatsoft.com/getVisitorUnReadMsgCount";
+
+    String ACTION_UPDATE_LAST_CONTENT = "com.github.echatmulti.action.last_content";
+    String NOTIFICATION_LAST_CONTENT = "notification_last_content";//broadcast or sp
 
     interface BroadcastPermission {
         String MESSAGE_RECEIVE_PERMISSION = "com.echat.chat.RECEIVE_PERMISSION";

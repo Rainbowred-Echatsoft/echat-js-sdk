@@ -103,7 +103,8 @@ public class OrderFragment extends BaseLazyFragment implements FragmentUtils.OnB
                 viewModel.deviceToken.getValue(),
                 viewModel.metaDataOnlyUid.getValue(),
                 visevt,
-                echatTag);
+                echatTag,
+                "");
     }
 
     private DataViewModel viewModel;

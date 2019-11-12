@@ -40,6 +40,7 @@ import me.majiajie.pagerbottomtabstrip.item.BaseTabItem;
 import me.majiajie.pagerbottomtabstrip.listener.OnTabItemSelectedListener;
 
 import static com.github.echat.chat.utils.Constants.CHAT_UNREAD_COUNT;
+import static com.github.echatmulti.sample.utils.Constants.STATUSBAR_COLOR;
 
 public class MainActivity extends AppCompatActivity {
     private TextView mTextMessage;
@@ -177,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
         }, 300);
         receiver = new ListenUnreadCountReceiver();
         IntentFilter filter = new IntentFilter(Constants.ACTION_UNREAD_COUNT);
-        registerReceiver(receiver, filter, Constants.BroadcastPermission.MESSAGE_SEND_PERMISSION, null);
+        registerReceiver(receiver, filter);
     }
 
     @Override
@@ -199,13 +200,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_notifications) {
-            RemoteNotificationUtils.cancelAll(this);
-            if (page != 1) {
-                openChat();
-            } else {
-                final VisEvtFragment visEvtFragment = (VisEvtFragment)adapter.getFragments().get(page);
-                visEvtFragment.openChat();
-            }
+            final Intent intent = new Intent(this, MessageActivity.class);
+            intent.putExtra(STATUSBAR_COLOR, testColors[page]);
+            startActivity(intent);
         }
         return true;
     }
@@ -218,7 +215,8 @@ public class MainActivity extends AppCompatActivity {
                 dataViewModel.deviceToken.getValue(),
                 dataViewModel.metaDataOnlyUid.getValue(),
                 null,
-                "app_android"
+                "app_android",
+                ""
         );
     }
 
@@ -288,6 +286,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (Constants.ACTION_UNREAD_COUNT.equals(action)) {
                 int notificationCount = bundle.getInt(CHAT_UNREAD_COUNT);
+                LogUtils.iTag("MainActivity", "收到修改消息数通知 -> " + notificationCount);
                 dataViewModel.unReadCount.setValue(notificationCount);
                 dataViewModel.saveUnreadCount();
             }

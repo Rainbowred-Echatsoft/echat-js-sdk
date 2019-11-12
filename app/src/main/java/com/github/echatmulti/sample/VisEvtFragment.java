@@ -127,7 +127,8 @@ public class VisEvtFragment extends BaseLazyFragment implements FragmentUtils.On
                 viewModel.deviceToken.getValue(),
                 viewModel.metaDataOnlyUid.getValue(),
                 visevt,
-                echatTag);
+                echatTag,
+                "");
     }
 
     private DataViewModel viewModel;

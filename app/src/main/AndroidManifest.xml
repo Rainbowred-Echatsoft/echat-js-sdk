@@ -23,7 +23,6 @@
 
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
-    <!-- SDK权限 -->
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -34,6 +33,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup,android:label">
+        <activity
+            android:name=".MessageActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <meta-data
             android:name="com.huawei.hms.client.appid"
@@ -42,13 +45,13 @@
         <activity
             android:name=".HandleMessageActivity"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".InitActivity"
             android:theme="@style/AppTheme.NoActionBar.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -56,8 +59,7 @@
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name="com.echat.echatjsdemo.MiPushActivity"
             android:exported="true"
@@ -72,8 +74,6 @@
                 <action android:name="com.echat.chat.action.UNREAD_COUNT" />
             </intent-filter>
         </receiver>
-
-
     </application>
 
 </manifest>

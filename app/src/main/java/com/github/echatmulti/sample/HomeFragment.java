@@ -80,7 +80,8 @@ public class HomeFragment extends BaseLazyFragment implements FragmentUtils.OnBa
                 viewModel.deviceToken.getValue(),
                 viewModel.metaDataOnlyUid.getValue(),
                 null,
-                "app_android"
+                "app_android",
+                ""
         );
     }
 

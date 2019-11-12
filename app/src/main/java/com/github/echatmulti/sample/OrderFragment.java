@@ -1,18 +1,16 @@
 package com.github.echatmulti.sample;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.text.Html;
+import android.text.TextUtils;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.FragmentUtils;
-import com.bumptech.glide.Glide;
 import com.github.echat.chat.EChatActivity;
 import com.github.echatmulti.sample.base.BaseLazyFragment;
 import com.github.echatmulti.sample.utils.DataViewModel;
@@ -85,6 +83,7 @@ public class OrderFragment extends BaseLazyFragment implements FragmentUtils.OnB
 
     private void openChatByOrder() {
         RemoteNotificationUtils.cancelAll(getContext());
+        String echatTag = TextUtils.isEmpty(viewModel.echatTag2.getValue()) ? "app_android" : viewModel.echatTag2.getValue();
         String visevt = null;
         JSONObject object = new JSONObject();
         try {
@@ -104,7 +103,7 @@ public class OrderFragment extends BaseLazyFragment implements FragmentUtils.OnB
                 viewModel.deviceToken.getValue(),
                 viewModel.metaDataOnlyUid.getValue(),
                 visevt,
-                "app_android");
+                echatTag);
     }
 
     private DataViewModel viewModel;

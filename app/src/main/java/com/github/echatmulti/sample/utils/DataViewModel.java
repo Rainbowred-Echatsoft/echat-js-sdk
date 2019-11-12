@@ -16,9 +16,12 @@ import static com.github.echatmulti.sample.utils.Constants.APPID;
 import static com.github.echatmulti.sample.utils.Constants.APPID_DEFAULT;
 import static com.github.echatmulti.sample.utils.Constants.COMPANY_ID;
 import static com.github.echatmulti.sample.utils.Constants.DEVICE_TOKEN_FUN;
+import static com.github.echatmulti.sample.utils.Constants.ECHATTAG1;
+import static com.github.echatmulti.sample.utils.Constants.ECHATTAG2;
 import static com.github.echatmulti.sample.utils.Constants.ENCODINGKEY;
 import static com.github.echatmulti.sample.utils.Constants.ENCODINGKEY_DEFAULT;
 import static com.github.echatmulti.sample.utils.Constants.METADATA_ONLY_UID;
+import static com.github.echatmulti.sample.utils.Constants.ROUTEENTRANCEID;
 import static com.github.echatmulti.sample.utils.Constants.TOKEN;
 import static com.github.echatmulti.sample.utils.Constants.TOKEN_DEFAULT;
 
@@ -35,6 +38,9 @@ public class DataViewModel extends ViewModel {
     public MutableLiveData<String> companyId = new MutableLiveData<>();
     public MutableLiveData<String> deviceToken = new MutableLiveData<>();
     public MutableLiveData<String> metaDataOnlyUid = new MutableLiveData<>();
+    public MutableLiveData<String> echatTag1 = new MutableLiveData<>();
+    public MutableLiveData<String> echatTag2 = new MutableLiveData<>();
+    public MutableLiveData<String> routeEntranceId = new MutableLiveData<>();
     public MutableLiveData<String> encodingKey = new MutableLiveData<>();
     public MutableLiveData<Integer> unReadCount = new MutableLiveData<>();
     public MutableLiveData<Integer> unReadRemoteCount = new MutableLiveData<>();
@@ -48,7 +54,10 @@ public class DataViewModel extends ViewModel {
         companyId.setValue(SPUtils.getInstance().getString(COMPANY_ID, "12170"));
         deviceToken.setValue(SPUtils.getInstance().getString(DEVICE_TOKEN_FUN));
         metaDataOnlyUid.setValue(SPUtils.getInstance().getString(METADATA_ONLY_UID, null));
-
+        deviceToken.setValue(SPUtils.getInstance().getString(DEVICE_TOKEN_FUN));
+        echatTag1.setValue(SPUtils.getInstance().getString(ECHATTAG1));
+        echatTag2.setValue(SPUtils.getInstance().getString(ECHATTAG2));
+        routeEntranceId.setValue(SPUtils.getInstance().getString(ROUTEENTRANCEID));
         if (TextUtils.isEmpty(metaDataOnlyUid.getValue())) {
             makeNewMetadata();
         }
@@ -76,7 +85,7 @@ public class DataViewModel extends ViewModel {
             return;
         }
         EChatUtils.getUnreadCount(context,
-               companyId.getValue(),
+                companyId.getValue(),
                 EncodeUtils.urlEncode(metaDataOnlyUid.getValue(), "UTF-8"),
                 null,
                 null,
@@ -108,6 +117,9 @@ public class DataViewModel extends ViewModel {
         SPUtils.getInstance().put(COMPANY_ID, companyId.getValue());
         SPUtils.getInstance().put(METADATA_ONLY_UID, metaDataOnlyUid.getValue());
         SPUtils.getInstance().put(ENCODINGKEY, encodingKey.getValue());
+        SPUtils.getInstance().put(ROUTEENTRANCEID, routeEntranceId.getValue());
+        SPUtils.getInstance().put(ECHATTAG1, echatTag1.getValue());
+        SPUtils.getInstance().put(ECHATTAG2, echatTag2.getValue());
         saveUnreadCount();
     }
 

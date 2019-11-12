@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -89,7 +90,9 @@ public class VisEvtFragment extends BaseLazyFragment implements FragmentUtils.On
 
      void openChat() {
         RemoteNotificationUtils.cancelAll(getContext());
-        String visevt = null;
+         String echatTag = TextUtils.isEmpty(viewModel.echatTag1.getValue()) ? "app_android" : viewModel.echatTag1.getValue();
+
+         String visevt = null;
         String companyId = viewModel.companyId.getValue();
         if (num == 1) {
             JSONObject object = new JSONObject();
@@ -124,7 +127,7 @@ public class VisEvtFragment extends BaseLazyFragment implements FragmentUtils.On
                 viewModel.deviceToken.getValue(),
                 viewModel.metaDataOnlyUid.getValue(),
                 visevt,
-                "app_android");
+                echatTag);
     }
 
     private DataViewModel viewModel;

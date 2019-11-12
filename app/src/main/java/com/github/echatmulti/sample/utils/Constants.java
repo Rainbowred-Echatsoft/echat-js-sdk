@@ -17,8 +17,10 @@ public interface Constants {
     String PLATFORM_SIGN = "platformSign";
     String METADATA_ONLY_UID = "onlyUidMetaData";
     String ENCODINGKEY = "encodingKey";
-
+    String ECHATTAG1 = "echatTag1";
+    String ECHATTAG2 = "echatTag2";
     String LASTCHAT = "lastChat";
+    String ROUTEENTRANCEID = "routeEntranceId";
     String UNREAD_COUNT = "chat_unread_count";
     String REMOTE_UNREAD_COUNT = "chat_remote_unread_count";
 

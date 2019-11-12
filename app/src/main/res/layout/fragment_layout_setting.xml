@@ -107,6 +107,74 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            style="@style/SettingItem"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/SettingItemTextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="echatTag1:"
+                android:textColor="#000" />
+
+            <EditText
+                android:id="@+id/edit_echatTag1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            style="@style/SettingItem"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/SettingItemTextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="echatTag2:"
+                android:textColor="#000" />
+
+            <EditText
+                android:id="@+id/edit_echatTag2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            style="@style/SettingItem"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/SettingItemTextview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="咨询入口id:"
+                android:textColor="#000" />
+
+            <EditText
+                android:id="@+id/edit_routeEntranceId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+        </LinearLayout>
+
 
         <LinearLayout
             style="@style/SettingItem"

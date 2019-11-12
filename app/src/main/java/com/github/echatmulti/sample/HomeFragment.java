@@ -1,6 +1,5 @@
 package com.github.echatmulti.sample;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,8 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.blankj.utilcode.util.FragmentUtils;
-import com.github.echatmulti.sample.base.BaseLazyFragment;
 import com.github.echat.chat.EChatActivity;
+import com.github.echatmulti.sample.base.BaseLazyFragment;
 import com.github.echatmulti.sample.utils.DataViewModel;
 import com.github.echatmulti.sample.utils.RemoteNotificationUtils;
 

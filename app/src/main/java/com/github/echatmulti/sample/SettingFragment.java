@@ -21,7 +21,6 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.github.echatmulti.sample.base.BaseLazyFragment;
 import com.github.echatmulti.sample.utils.Constants;
 import com.github.echatmulti.sample.utils.DataViewModel;
-import com.github.echat.chat.utils.EChatUtils;
 import com.uuzuche.lib_zxing.activity.CaptureActivity;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
 
@@ -44,6 +43,9 @@ public class SettingFragment extends BaseLazyFragment implements FragmentUtils.O
     private EditText edToken;
     private EditText edCompanyid;
     private EditText edEncodingKey;
+    private EditText edEchatTag1;
+    private EditText edEchatTag2;
+    private EditText edRouteEntranceId;
     private DataViewModel dataViewModel;
 
     public static SettingFragment newInstance() {
@@ -86,6 +88,10 @@ public class SettingFragment extends BaseLazyFragment implements FragmentUtils.O
         edToken = findViewById(R.id.edit_token);
         edCompanyid = findViewById(R.id.edit_companyid);
         edEncodingKey = findViewById(R.id.edit_encodingKey);
+        edEchatTag1 = findViewById(R.id.edit_echatTag1);
+        edEchatTag2 = findViewById(R.id.edit_echatTag2);
+        edRouteEntranceId = findViewById(R.id.edit_routeEntranceId);
+
         ((TextView) findViewById(R.id.tvDevicetoken)).setText(String.format("device token:%s", dataViewModel.deviceToken.getValue()));
         edAppid.setText(dataViewModel.appid.getValue());
         edToken.setText(dataViewModel.token.getValue());
@@ -104,6 +110,9 @@ public class SettingFragment extends BaseLazyFragment implements FragmentUtils.O
             dataViewModel.token.setValue(edToken.getText().toString());
             dataViewModel.companyId.setValue(edCompanyid.getText().toString());
             dataViewModel.encodingKey.setValue(edEncodingKey.getText().toString());
+            dataViewModel.echatTag1.setValue(edEchatTag1.getText().toString());
+            dataViewModel.echatTag2.setValue(edEchatTag2.getText().toString());
+            dataViewModel.routeEntranceId.setValue(edRouteEntranceId.getText().toString());
             dataViewModel.makeNewMetadata();
             dataViewModel.saveData();
             ToastUtils.showShort("save successful");

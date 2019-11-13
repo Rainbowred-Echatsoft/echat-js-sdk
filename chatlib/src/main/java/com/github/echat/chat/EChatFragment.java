@@ -97,11 +97,13 @@ import static android.app.Activity.RESULT_OK;
 import static android.content.Context.DOWNLOAD_SERVICE;
 import static com.github.echat.chat.utils.Constants.ACTION_NEW_MSG;
 import static com.github.echat.chat.utils.Constants.ACTION_UNREAD_COUNT;
+import static com.github.echat.chat.utils.Constants.ACTION_UPDATE_LAST_CONTENT;
 import static com.github.echat.chat.utils.Constants.CHAT_LAST_CHAT_TIME;
 import static com.github.echat.chat.utils.Constants.CHAT_UNREAD_COUNT;
 import static com.github.echat.chat.utils.Constants.COMPANY_ID;
 import static com.github.echat.chat.utils.Constants.ECHATTAG;
 import static com.github.echat.chat.utils.Constants.METADATA;
+import static com.github.echat.chat.utils.Constants.NOTIFICATION_LAST_CONTENT;
 import static com.github.echat.chat.utils.Constants.PUSH_INFO;
 import static com.github.echat.chat.utils.Constants.ROUTEENTRANCEID;
 import static com.github.echat.chat.utils.Constants.SP_LAST_CHAT_TIME;
@@ -1317,6 +1319,8 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                 if (functionName.equals("newMsg")) {
                     mHandler.post(new Runnable() {
                         public void run() {
+                            //save last content
+                            saveLastContent(value);
                             if (!AppUtils.isAppForeground()) {
                                 String tempCurrentUrl = mWebView.getUrl();
                                 unreadCount++;
@@ -1324,6 +1328,15 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                                 sendNewMessage(tempCurrentUrl, currentCompanyId, currentCompanyName, value, unreadCount, Constants.TYPE_NEW_MSG_FROM_CHAT);
                             }
 
+                        }
+                    });
+                }
+
+                if ("visitorSendMsg".equals(functionName)) {
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            saveLastContent(value);
                         }
                     });
                 }
@@ -1383,6 +1396,16 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                 LogUtils.eTag("Exception", e);
             }
         }
+    }
+
+    private void saveLastContent(String content) {
+        SPUtils.getInstance().put(Constants.NOTIFICATION_LAST_CONTENT, content);
+        Intent intent = new Intent();
+        Bundle bundle = new Bundle();
+        bundle.putString(NOTIFICATION_LAST_CONTENT, content);
+        intent.putExtras(bundle);
+        intent.setAction(ACTION_UPDATE_LAST_CONTENT);
+        getWActivity().sendBroadcast(intent);
     }
 
 

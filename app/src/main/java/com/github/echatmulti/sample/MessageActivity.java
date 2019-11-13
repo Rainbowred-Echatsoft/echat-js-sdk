@@ -39,7 +39,7 @@ public class MessageActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, MessageFragment.newInstance())
+                    .replace(R.id.container, MessageFragment.newInstance(color))
                     .commitNow();
         }
     }

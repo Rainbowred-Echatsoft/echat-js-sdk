@@ -96,6 +96,6 @@ public class HomeFragment extends BaseLazyFragment implements FragmentUtils.OnBa
     }
 
     private DataViewModel initViewModel() {
-        return ViewModelProviders.of((FragmentActivity) mActivity).get(DataViewModel.class);
+        return ViewModelProviders.of((FragmentActivity) getWActivity()).get(DataViewModel.class);
     }
 }

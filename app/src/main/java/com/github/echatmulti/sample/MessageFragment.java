@@ -26,6 +26,7 @@ import static com.github.echat.chat.utils.Constants.ACTION_UNREAD_COUNT;
 import static com.github.echat.chat.utils.Constants.ACTION_UPDATE_LAST_CONTENT;
 import static com.github.echat.chat.utils.Constants.CHAT_UNREAD_COUNT;
 import static com.github.echat.chat.utils.Constants.NOTIFICATION_LAST_CONTENT;
+import static com.github.echatmulti.sample.utils.Constants.STATUSBAR_COLOR;
 
 /**
  * @Author: xhy
@@ -40,6 +41,7 @@ public class MessageFragment extends BaseLazyFragment implements FragmentUtils.O
     private TextView tvNum;
     private TextView tvLastContent;
     private String lastContent;
+    private int color;
     private UpdateMessageReceiver receiver;
 
     class UpdateMessageReceiver extends BroadcastReceiver {
@@ -68,10 +70,9 @@ public class MessageFragment extends BaseLazyFragment implements FragmentUtils.O
     }
 
 
-    public static MessageFragment newInstance() {
-
+    public static MessageFragment newInstance(int statusBarColor) {
         Bundle args = new Bundle();
-
+        args.putInt(STATUSBAR_COLOR, statusBarColor);
         MessageFragment fragment = new MessageFragment();
         fragment.setArguments(args);
         return fragment;
@@ -96,6 +97,7 @@ public class MessageFragment extends BaseLazyFragment implements FragmentUtils.O
     public void initData(@Nullable Bundle bundle) {
         viewModel = initViewModel();
         viewModel.loadData();
+        color = bundle.getInt(STATUSBAR_COLOR);
         lastContent = SPUtils.getInstance().getString(NOTIFICATION_LAST_CONTENT);
         LogUtils.iTag(TAG, "这样读数据：" + viewModel.encodingKey.getValue());
     }
@@ -158,7 +160,9 @@ public class MessageFragment extends BaseLazyFragment implements FragmentUtils.O
                     viewModel.routeEntranceId.getValue());
 
         } else {
-            startActivity(new Intent(getActivity(), HandleMessageActivity.class));
+            final Intent intent = new Intent(getActivity(), HandleMessageActivity.class);
+            intent.putExtra(STATUSBAR_COLOR, color);
+            startActivity(intent);
         }
 
     }
@@ -174,6 +178,6 @@ public class MessageFragment extends BaseLazyFragment implements FragmentUtils.O
     private DataViewModel viewModel;
 
     private DataViewModel initViewModel() {
-        return ViewModelProviders.of((FragmentActivity) mActivity).get(DataViewModel.class);
+        return ViewModelProviders.of((FragmentActivity) getWActivity()).get(DataViewModel.class);
     }
 }

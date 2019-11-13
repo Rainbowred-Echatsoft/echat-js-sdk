@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.lang.ref.WeakReference;
 
 
 public abstract class BaseFragment extends Fragment
@@ -23,14 +24,18 @@ public abstract class BaseFragment extends Fragment
     private static final String TAG = "BaseFragment";
     private static final String STATE_SAVE_IS_HIDDEN = "STATE_SAVE_IS_HIDDEN";
 
-    protected Activity mActivity;
+    private WeakReference<Activity> mActivityWeakReference;
     protected LayoutInflater mInflater;
     protected View mContentView;
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        mActivity = (Activity) context;
+        mActivityWeakReference = new WeakReference<>((Activity) context);
+    }
+
+    protected Activity getWActivity() {
+        return mActivityWeakReference.get();
     }
 
     @Override

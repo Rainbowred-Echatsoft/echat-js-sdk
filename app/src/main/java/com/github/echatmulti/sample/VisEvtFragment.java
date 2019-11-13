@@ -134,6 +134,6 @@ public class VisEvtFragment extends BaseLazyFragment implements FragmentUtils.On
     private DataViewModel viewModel;
 
     private DataViewModel initViewModel() {
-        return ViewModelProviders.of((FragmentActivity) mActivity).get(DataViewModel.class);
+        return ViewModelProviders.of((FragmentActivity) getWActivity()).get(DataViewModel.class);
     }
 }

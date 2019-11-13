@@ -110,6 +110,6 @@ public class OrderFragment extends BaseLazyFragment implements FragmentUtils.OnB
     private DataViewModel viewModel;
 
     private DataViewModel initViewModel() {
-        return ViewModelProviders.of((FragmentActivity) mActivity).get(DataViewModel.class);
+        return ViewModelProviders.of((FragmentActivity) getWActivity()).get(DataViewModel.class);
     }
 }

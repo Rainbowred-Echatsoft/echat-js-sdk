@@ -182,9 +182,9 @@ public class SettingFragment extends BaseLazyFragment implements FragmentUtils.O
             edToken.setText(dataViewModel.token.getValue());
             edCompanyid.setText(dataViewModel.companyId.getValue());
             edEncodingKey.setText(dataViewModel.encodingKey.getValue());
-            edEchatTag1.setText("");
-            edEchatTag2.setText("");
-            edRouteEntranceId.setText("");
+            edEchatTag1.setText(dataViewModel.echatTag1.getValue());
+            edEchatTag2.setText(dataViewModel.echatTag2.getValue());
+            edRouteEntranceId.setText(dataViewModel.routeEntranceId.getValue());
             ToastUtils.showShort("还原成功");
         }
     }

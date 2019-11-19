@@ -55,9 +55,9 @@ public class DataViewModel extends ViewModel {
         deviceToken.setValue(SPUtils.getInstance().getString(DEVICE_TOKEN_FUN));
         metaDataOnlyUid.setValue(SPUtils.getInstance().getString(METADATA_ONLY_UID, null));
         deviceToken.setValue(SPUtils.getInstance().getString(DEVICE_TOKEN_FUN));
-        echatTag1.setValue(SPUtils.getInstance().getString(ECHATTAG1));
-        echatTag2.setValue(SPUtils.getInstance().getString(ECHATTAG2));
-        routeEntranceId.setValue(SPUtils.getInstance().getString(ROUTEENTRANCEID));
+        echatTag1.setValue(SPUtils.getInstance().getString(ECHATTAG1, "售前咨询"));
+        echatTag2.setValue(SPUtils.getInstance().getString(ECHATTAG2, "售后服务"));
+        routeEntranceId.setValue(SPUtils.getInstance().getString(ROUTEENTRANCEID, "209"));
         if (TextUtils.isEmpty(metaDataOnlyUid.getValue())) {
             makeNewMetadata();
         }
@@ -128,6 +128,9 @@ public class DataViewModel extends ViewModel {
         token.setValue(TOKEN_DEFAULT);
         encodingKey.setValue(ENCODINGKEY_DEFAULT);
         companyId.setValue("12170");
+        echatTag1.setValue("售前咨询");
+        echatTag2.setValue("售后服务");
+        routeEntranceId.setValue("209");
         makeNewMetadata();
         saveData();
     }

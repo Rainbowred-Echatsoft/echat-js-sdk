@@ -47,7 +47,7 @@
                 style="@style/SettingItemTextview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="appid:"
+                android:text="appId:"
                 android:textColor="#000" />
 
             <EditText
@@ -70,7 +70,7 @@
                 style="@style/SettingItemTextview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="encodingKey:"
+                android:text="encodingAesKey:"
                 android:textColor="#000" />
 
             <EditText
@@ -95,7 +95,7 @@
                 style="@style/SettingItemTextview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="公司id:"
+                android:text="companyId:"
                 android:textColor="#000" />
 
             <EditText
@@ -155,7 +155,6 @@
 
         <LinearLayout
             style="@style/SettingItem"
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -164,7 +163,7 @@
                 style="@style/SettingItemTextview"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="咨询入口id:"
+                android:text="routeEntranceId:"
                 android:textColor="#000" />
 
             <EditText

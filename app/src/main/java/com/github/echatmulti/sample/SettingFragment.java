@@ -97,6 +97,9 @@ public class SettingFragment extends BaseLazyFragment implements FragmentUtils.O
         edToken.setText(dataViewModel.token.getValue());
         edCompanyid.setText(dataViewModel.companyId.getValue());
         edEncodingKey.setText(dataViewModel.encodingKey.getValue());
+        edEchatTag1.setText(dataViewModel.echatTag1.getValue());
+        edEchatTag2.setText(dataViewModel.echatTag2.getValue());
+        edRouteEntranceId.setText(dataViewModel.routeEntranceId.getValue());
         findViewById(R.id.btn_save).setOnClickListener(this::onDebouncingClick);
         findViewById(R.id.btn_qr).setOnClickListener(this::onDebouncingClick);
         findViewById(R.id.btn_reset).setOnClickListener(this::onDebouncingClick);
@@ -179,6 +182,9 @@ public class SettingFragment extends BaseLazyFragment implements FragmentUtils.O
             edToken.setText(dataViewModel.token.getValue());
             edCompanyid.setText(dataViewModel.companyId.getValue());
             edEncodingKey.setText(dataViewModel.encodingKey.getValue());
+            edEchatTag1.setText("");
+            edEchatTag2.setText("");
+            edRouteEntranceId.setText("");
             ToastUtils.showShort("还原成功");
         }
     }
@@ -199,14 +205,21 @@ public class SettingFragment extends BaseLazyFragment implements FragmentUtils.O
                     try {
                         JSONObject resultObj = new JSONObject(result);
                         final String appIdString = resultObj.optString("appId");
-                        final String aesKey = resultObj.optString("aesKey");
+                        final String aesKey = resultObj.optString("encodingAesKey");
                         final String tokenString = resultObj.optString("token");
                         final String companyId = resultObj.optString("companyId");
+                        final String echatTag1 = resultObj.optString("echatTag1");
+                        final String echatTag2 = resultObj.optString("echatTag2");
+                        final String routeEntranceId = resultObj.optString("routeEntranceId");
+
 
                         dataViewModel.appid.setValue(appIdString);
                         dataViewModel.token.setValue(tokenString);
                         dataViewModel.encodingKey.setValue(aesKey);
                         dataViewModel.companyId.setValue(companyId);
+                        dataViewModel.echatTag1.setValue(echatTag1);
+                        dataViewModel.echatTag2.setValue(echatTag2);
+                        dataViewModel.routeEntranceId.setValue(routeEntranceId);
                         dataViewModel.makeNewMetadata();
                         dataViewModel.saveData();
 
@@ -214,6 +227,9 @@ public class SettingFragment extends BaseLazyFragment implements FragmentUtils.O
                         edToken.setText(tokenString);
                         edEncodingKey.setText(aesKey);
                         edCompanyid.setText(companyId);
+                        edEchatTag1.setText(echatTag1);
+                        edEchatTag2.setText(echatTag2);
+                        edRouteEntranceId.setText(routeEntranceId);
                         ToastUtils.setGravity(Gravity.CENTER, 0, 0);
                         ToastUtils.showLong("修改成功");
 

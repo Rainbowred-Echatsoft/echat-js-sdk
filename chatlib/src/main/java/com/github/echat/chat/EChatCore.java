@@ -2,8 +2,6 @@ package com.github.echat.chat;
 
 import android.content.Context;
 
-import java.lang.ref.WeakReference;
-
 /**
  * @Author: xhy
  * @Email: xuhaoyang3x@gmail.com

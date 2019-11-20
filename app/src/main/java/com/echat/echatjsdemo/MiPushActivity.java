@@ -2,22 +2,16 @@ package com.echat.echatjsdemo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.github.echat.chat.EChatActivity;
-import com.github.echat.chat.utils.Constants;
 import com.github.echatmulti.sample.MainActivity;
-import com.github.echatmulti.sample.utils.RemoteNotificationUtils;
 import com.umeng.message.UmengNotifyClickActivity;
-import com.xiaomi.mipush.sdk.MiPushClient;
 
 import org.android.agoo.common.AgooConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.HashMap;
 
 import static com.github.echat.chat.utils.Constants.EXTRA_CHAT_URL;
 import static com.github.echat.chat.utils.Constants.EXTRA_COMPANY_ID;
@@ -47,7 +41,6 @@ public class MiPushActivity extends UmengNotifyClickActivity {
         super.onMessage(intent);
         String body = intent.getStringExtra(AgooConstants.MESSAGE_BODY);
         LogUtils.i(TAG, body);
-        //{"display_type":"notification","extra":{"unreadMsgCount":"1","chatCompanyId":"500029","echatUrl":"https://ps.echatsoft.com/visitor/mobile/chat.html?companyId=500029&echatTag=app_platform&pushInfo=Ai6Jvchzk1r6mcD5BqU8oQCcEV_X1MGOdSeM3j0A290x&myData=","echatTimeStamp":"1561978802951"},"msg_id":"uuqi9xn156197880507101","body":{"after_open":"go_app","ticker":"Echat","text":"消息2","title":"一洽@安卓开发"},"random_min":0}
         try {
             JSONObject jsonObject = new JSONObject(body);
             final JSONObject extra = jsonObject.optJSONObject("extra");

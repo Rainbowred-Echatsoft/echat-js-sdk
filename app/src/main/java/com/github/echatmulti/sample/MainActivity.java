@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.SPUtils;
 import com.github.echat.chat.EChatActivity;
 import com.github.echat.chat.utils.Constants;
 import com.github.echatmulti.sample.ui.MenuItemBadge;
@@ -39,10 +38,15 @@ import me.majiajie.pagerbottomtabstrip.PageNavigationView;
 import me.majiajie.pagerbottomtabstrip.item.BaseTabItem;
 import me.majiajie.pagerbottomtabstrip.listener.OnTabItemSelectedListener;
 
-import static com.github.echat.chat.utils.Constants.CHAT_UNREAD_COUNT;
+import static com.github.echat.chat.utils.Constants.ACTION_LOCAL_UNREAD_COUNT;
+import static com.github.echat.chat.utils.Constants.ACTION_REMOTE_UNREAD_COUNT;
+import static com.github.echat.chat.utils.Constants.CHAT_LOCAL_UNREAD_COUNT;
+import static com.github.echat.chat.utils.Constants.CHAT_REMOTE_UNREAD_COUNT;
 import static com.github.echatmulti.sample.utils.Constants.STATUSBAR_COLOR;
 
 public class MainActivity extends AppCompatActivity {
+
+    private final static String TAG = "MainActivity";
     private TextView mTextMessage;
     private ImmersionBar mImmersionBar;
     private DataViewModel dataViewModel;
@@ -98,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
         mNavigationController.addTabItemSelectedListener(new OnTabItemSelectedListener() {
             @Override
             public void onSelected(int index, int old) {
-                LogUtils.i("selected: " + index + " old: " + old);
                 toolbar.setBackgroundColor(testColors[index]);
                 page = index;
                 if (index == 3) {
@@ -118,10 +121,11 @@ public class MainActivity extends AppCompatActivity {
         App.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                LogUtils.i(String.format("deviceToken:%s", dataViewModel.deviceToken.getValue()));
-                LogUtils.i(String.format("metaData:%s", dataViewModel.metaDataOnlyUid.getValue()));
-                LogUtils.i(String.format("unreadCount:%d", dataViewModel.unReadCount.getValue()));
-
+                LogUtils.i(String.format("deviceToken:%s \n metaData:%s \n unreadCount:%d \n unReadRemoteCount:%d",
+                        dataViewModel.deviceToken.getValue(),
+                        dataViewModel.metaDataOnlyUid.getValue(),
+                        dataViewModel.unReadCount.getValue(),
+                        dataViewModel.unReadRemoteCount.getValue()));
             }
         }, 5000);
 
@@ -173,11 +177,13 @@ public class MainActivity extends AppCompatActivity {
         App.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                LogUtils.i("更新未读消息数");
                 dataViewModel.loadUnreadCount();//更新未读消息数
             }
         }, 300);
         receiver = new ListenUnreadCountReceiver();
-        IntentFilter filter = new IntentFilter(Constants.ACTION_UNREAD_COUNT);
+        IntentFilter filter = new IntentFilter(ACTION_LOCAL_UNREAD_COUNT);
+        filter.addAction(Constants.ACTION_REMOTE_UNREAD_COUNT);
         registerReceiver(receiver, filter);
     }
 
@@ -191,7 +197,6 @@ public class MainActivity extends AppCompatActivity {
                 .textBackgroundColor(Color.parseColor("#EF4738"))
                 .textColor(Color.WHITE));
         MenuItemBadge.getBadgeTextView(notificationItem).setBadgeCount(0);
-        LogUtils.i(SPUtils.getInstance().getInt(com.github.echatmulti.sample.utils.Constants.UNREAD_COUNT));
         dataViewModel.loadUnreadCount();
         return true;
     }
@@ -284,11 +289,22 @@ public class MainActivity extends AppCompatActivity {
             String action = intent.getAction();
             Bundle bundle = intent.getExtras();
 
-            if (Constants.ACTION_UNREAD_COUNT.equals(action)) {
-                int notificationCount = bundle.getInt(CHAT_UNREAD_COUNT);
-                LogUtils.iTag("MainActivity", "收到修改消息数通知 -> " + notificationCount);
-                dataViewModel.unReadCount.setValue(notificationCount);
-                dataViewModel.saveUnreadCount();
+            /**
+             * 本地推送的数据
+             */
+            if (ACTION_LOCAL_UNREAD_COUNT.equals(action)) {
+                final long localUnreadCount = bundle.getInt(CHAT_LOCAL_UNREAD_COUNT);
+                LogUtils.iTag(TAG, "收到本地消息 数改变：" + dataViewModel.unReadCount.getValue() + " -> " + localUnreadCount);
+                dataViewModel.loadUnreadCount();
+            }
+
+            /**
+             * 远程推送的数据
+             */
+            else if (ACTION_REMOTE_UNREAD_COUNT.equals(action)) {
+                final long remoteUnreadCount = bundle.getInt(CHAT_REMOTE_UNREAD_COUNT);
+                LogUtils.iTag(TAG, "收到本地消息 数改变：" + dataViewModel.unReadRemoteCount.getValue() + " -> " + remoteUnreadCount);
+                dataViewModel.loadUnreadCount();
             }
         }
     }

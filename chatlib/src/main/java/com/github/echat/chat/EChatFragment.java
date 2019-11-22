@@ -61,7 +61,6 @@ import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
 import com.blankj.utilcode.util.PermissionUtils;
-import com.blankj.utilcode.util.SPUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.echat.jzvd.JZVideoPlayer;
 import com.echat.jzvd.JZVideoPlayerStandard;
@@ -74,6 +73,7 @@ import com.github.echat.chat.otherui.BrowserActivity;
 import com.github.echat.chat.otherui.CameraActivity;
 import com.github.echat.chat.otherui.WebviewBottomDialogActivity;
 import com.github.echat.chat.utils.Constants;
+import com.github.echat.chat.utils.EChatUtils;
 import com.github.echat.chat.utils.FragmentUtils;
 import com.github.echat.chat.utils.GifSizeFilter;
 import com.github.echat.chat.utils.GlideImageEngine;
@@ -96,20 +96,16 @@ import java.util.Map;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.DOWNLOAD_SERVICE;
 import static com.github.echat.chat.utils.Constants.ACTION_NEW_MSG;
-import static com.github.echat.chat.utils.Constants.ACTION_UNREAD_COUNT;
-import static com.github.echat.chat.utils.Constants.ACTION_UPDATE_LAST_CONTENT;
-import static com.github.echat.chat.utils.Constants.CHAT_LAST_CHAT_TIME;
-import static com.github.echat.chat.utils.Constants.CHAT_UNREAD_COUNT;
+import static com.github.echat.chat.utils.Constants.CHAT_LOCAL_UNREAD_COUNT;
 import static com.github.echat.chat.utils.Constants.COMPANY_ID;
 import static com.github.echat.chat.utils.Constants.ECHATTAG;
 import static com.github.echat.chat.utils.Constants.METADATA;
-import static com.github.echat.chat.utils.Constants.NOTIFICATION_LAST_CONTENT;
 import static com.github.echat.chat.utils.Constants.PUSH_INFO;
 import static com.github.echat.chat.utils.Constants.ROUTEENTRANCEID;
-import static com.github.echat.chat.utils.Constants.SP_LAST_CHAT_TIME;
 import static com.github.echat.chat.utils.Constants.TYPE;
 import static com.github.echat.chat.utils.Constants.TYPE_CHAT;
 import static com.github.echat.chat.utils.Constants.VISEVT;
+import static com.github.echat.chat.utils.EChatUtils.sendLastChatInformation;
 
 
 /**
@@ -179,7 +175,9 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         LogUtils.iTag(TAG, "onResume " + this);
         super.onResume();
         unreadCount = 0;
-        sendUnreadCount(unreadCount, lastChatTime);
+        EChatUtils.sendLocalUnreadCount(getWActivity(), unreadCount, lastChatTime);
+        EChatUtils.sendRemoteUnreadCount(getWActivity(), 0, lastChatTime);
+
         //恢复Webview活动
         /*mWebView.resumeTimers();
         /**
@@ -240,7 +238,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         LogUtils.e("未读消息数:" + unreadCount);
 
         //先初始化
-        lastChatTime = SPUtils.getInstance().getLong(SP_LAST_CHAT_TIME);
+        lastChatTime = EChatUtils.getLastChatTime();
         String chatUrl = bundle.getString(Constants.EXTRA_CHAT_URL, "");
         //来自通知点击打开
         if (!TextUtils.isEmpty(chatUrl)) {
@@ -249,7 +247,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         }
         //用户点击打开
         else {
-            openCompanyId = bundle.getString(COMPANY_ID);
+            openCompanyId = bundle.getString(COMPANY_ID, bundle.getString(Constants.EXTRA_COMPANY_ID, ""));
             pushInfo = bundle.getString(PUSH_INFO);
             metaData = bundle.getString(METADATA);
             visEvt = bundle.getString(VISEVT);
@@ -258,7 +256,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             String type = bundle.getString(TYPE);
             LogUtils.i(String.format("visEvt:%s ", visEvt));
             if (TYPE_CHAT.equals(type)) {
-                openUrl = CHAT_URL;
+                openUrl = Constants.CHAT_URL;
             }
             openUrl = UrlUtils.appendParams(openUrl, new HashMap<String, String>() {{
                 if (!TextUtils.isEmpty(openCompanyId)) put("companyId", openCompanyId);
@@ -1133,8 +1131,6 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     private int msgboxUreadMsgCount;
 
 
-    public final static String CHAT_URL = "https://es.echatsoft.com/visitor/mobile/chat.html";
-
     private ValueCallback<Uri> mUploadMessage;
     private ValueCallback<Uri[]> mUploadMessageL;
     private Uri result;
@@ -1238,8 +1234,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
 
                 if ("sendWebsocketTime".equals(functionName)) {
                     lastChatTime = jsonObject.optLong("value");
-                    sendUnreadCount(unreadCount, lastChatTime);
-                    SPUtils.getInstance().put(SP_LAST_CHAT_TIME, lastChatTime);
+                    sendLastChatInformation(getWActivity(), null, lastChatTime);
                 }
 
                 /**
@@ -1320,11 +1315,12 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                     mHandler.post(new Runnable() {
                         public void run() {
                             //save last content
-                            saveLastContent(value);
+                            sendLastChatInformation(getWActivity(), value, System.currentTimeMillis());
+
                             if (!AppUtils.isAppForeground()) {
                                 String tempCurrentUrl = mWebView.getUrl();
                                 unreadCount++;
-                                sendUnreadCount(unreadCount, lastChatTime);
+                                EChatUtils.sendLocalUnreadCount(getWActivity(), unreadCount, lastChatTime);
                                 sendNewMessage(tempCurrentUrl, currentCompanyId, currentCompanyName, value, unreadCount, Constants.TYPE_NEW_MSG_FROM_CHAT);
                             }
 
@@ -1336,7 +1332,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            saveLastContent(value);
+                            sendLastChatInformation(getWActivity(), value, System.currentTimeMillis());
                         }
                     });
                 }
@@ -1398,16 +1394,6 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         }
     }
 
-    private void saveLastContent(String content) {
-        SPUtils.getInstance().put(Constants.NOTIFICATION_LAST_CONTENT, content);
-        Intent intent = new Intent();
-        Bundle bundle = new Bundle();
-        bundle.putString(NOTIFICATION_LAST_CONTENT, content);
-        intent.putExtras(bundle);
-        intent.setAction(ACTION_UPDATE_LAST_CONTENT);
-        getWActivity().sendBroadcast(intent);
-    }
-
 
     private void sendNewMessage(String chatUrl, String companyIdString, String companyName, String msgContent, int unreadMsgCount, int newMsgType) {
         if (!TextUtils.isEmpty(msgContent) || !TextUtils.isEmpty(companyName)) {
@@ -1418,23 +1404,12 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             bundle.putString(Constants.CHAT_COMPANY_ID, companyIdString);
             bundle.putString(Constants.CHAT_COMPANY_NAME, companyName);
             bundle.putString(Constants.CHAT_MSG_CONTENT, msgContent);
-            bundle.putInt(CHAT_UNREAD_COUNT, unreadMsgCount);
+            bundle.putInt(CHAT_LOCAL_UNREAD_COUNT, unreadMsgCount);
             intent.putExtras(bundle);
             intent.setAction(ACTION_NEW_MSG);
             intent.setPackage(getWActivity().getPackageName());
             getWActivity().sendBroadcast(intent);
         }
-    }
-
-    private void sendUnreadCount(int unreadMsgCount, long lastChatTime) {
-        Intent intent = new Intent();
-        Bundle bundle = new Bundle();
-        bundle.putInt(CHAT_UNREAD_COUNT, unreadMsgCount);
-        bundle.putLong(CHAT_LAST_CHAT_TIME, lastChatTime);
-        intent.putExtras(bundle);
-        intent.setAction(ACTION_UNREAD_COUNT);
-        intent.setPackage(getWActivity().getPackageName());
-        getWActivity().sendBroadcast(intent);
     }
 
 

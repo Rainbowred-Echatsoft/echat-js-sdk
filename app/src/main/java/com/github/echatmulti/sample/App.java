@@ -49,26 +49,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.github.echat.chat.utils.Constants.ACTION_UNREAD_COUNT;
-import static com.github.echat.chat.utils.Constants.ACTION_UPDATE_LAST_CONTENT;
-import static com.github.echat.chat.utils.Constants.CHAT_LAST_CHAT_TIME;
-import static com.github.echat.chat.utils.Constants.CHAT_UNREAD_COUNT;
-import static com.github.echat.chat.utils.Constants.NOTIFICATION_LAST_CONTENT;
+
 import static com.github.echatmulti.sample.utils.Constants.ACTION_DEVICE_TOKEN;
 import static com.github.echatmulti.sample.utils.Constants.APPID;
 import static com.github.echatmulti.sample.utils.Constants.APPID_DEFAULT;
+import static com.github.echatmulti.sample.utils.Constants.COMPANY_ID;
 import static com.github.echatmulti.sample.utils.Constants.DEVICE_TOKEN_FUN;
-import static com.github.echatmulti.sample.utils.Constants.LASTCHAT;
 import static com.github.echatmulti.sample.utils.Constants.METADATA_ONLY_UID;
 import static com.github.echatmulti.sample.utils.Constants.TOKEN;
 import static com.github.echatmulti.sample.utils.Constants.TOKEN_DEFAULT;
-import static com.github.echatmulti.sample.utils.Constants.UNREAD_COUNT;
 
 public class App extends Application {
 
     private final static String TAG = "EChatMulti_N";
 
     public static Handler handler;
+
+    // TODO: 2019-11-22 handler go to get
+    private class Runhandler extends Handler {
+
+    }
 
     @Override
     public void onCreate() {
@@ -194,6 +194,7 @@ public class App extends Application {
                 .setSingleTagSwitch(false)// 一条日志仅输出一条，默认开，为美化 AS 3.1 的 Logcat
                 .setDir(logfile)// 当自定义路径为空时，写入应用的/cache/log/目录中
                 .setBorderSwitch(false)// 输出日志是否带边框开关，默认开
+                .setStackDeep(4)//log 栈深度，默认为 1
                 .setConsoleFilter(LogUtils.V)// log的控制台过滤器，和logcat过滤器同理，默认Verbose
                 .setFileFilter(LogUtils.V)// log文件过滤器，和logcat过滤器同理，默认Verbose
                 // 新增 ArrayList 格式化器，默认已支持 Array, Throwable, Bundle, Intent 的格式化输出
@@ -238,43 +239,35 @@ public class App extends Application {
                 final RemoteNotificationUtils notification = RemoteNotificationUtils.getInstance(context);
                 final String chatCompanyId = uMessage.extra.get("chatCompanyId");
                 final String echatUrl = uMessage.extra.get("echatUrl");
-                final String unreadMsgCount = uMessage.extra.get("unreadMsgCount");
+                final String remoteUnreadMsgCount = uMessage.extra.get("unreadMsgCount");
                 final String echatTimeStampString = uMessage.extra.get("echatTimeStamp");
 
                 long echatTimeStamp = Long.valueOf(echatTimeStampString);
-                final long lastChatTime = SPUtils.getInstance().getLong(LASTCHAT, 0l);
-                //判断当前消息是否应该推送[lastChatTime上次已知最后一次进入对话窗口/接受到远程消息时间戳]
+                final long lastChatTime = EChatUtils.getLastChatTime();
+                //判断当前消息是否应该推送[lastChatTime 意指 上次已知最后一次进入对话窗口/访客发送消息时间戳/接受到远程消息时间戳/获取访客未读消息条数接口获得时间戳]
                 //用于排除远程消息/厂商消息延后到达 避免不必要的通知
+                //避免 因远程推送延迟到达 错误更新对话最后一条消息
                 if (lastChatTime < echatTimeStamp) {
 
-                    //通知一下UI 更新通知数
-                    SPUtils.getInstance().put(UNREAD_COUNT, Integer.valueOf(unreadMsgCount));
-                    Intent intent = new Intent();
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(CHAT_UNREAD_COUNT, Integer.valueOf(unreadMsgCount));
-                    bundle.putLong(CHAT_LAST_CHAT_TIME, echatTimeStamp);
-                    intent.putExtras(bundle);
-                    intent.setAction(ACTION_UNREAD_COUNT);
-                    sendBroadcast(intent);
+                    LogUtils.iTag(TAG, "收到远程推送: 把content：" + uMessage.text + ", 存储到本地 用于消息列表显示");
+                    if (!TextUtils.isEmpty(uMessage.text)) {
+                        EChatUtils.sendLastChatInformation(getApplicationContext(), uMessage.text, echatTimeStamp);
+                    } else {
+                        EChatUtils.setLastChatInformation(null, echatTimeStamp);
+                    }
+                    //通知一下UI 更新通知数并保存本地
+                    EChatUtils.sendRemoteUnreadCount(getApplicationContext(), Integer.valueOf(remoteUnreadMsgCount), echatTimeStamp);
 
+                    final int localUnreadCount = EChatUtils.getLocalUnreadCount();
                     notification
                             .setNotificationId(Integer.parseInt(chatCompanyId))
-                            .setCount(0)
+                            .setCount(localUnreadCount + Integer.valueOf(remoteUnreadMsgCount))
                             .showNotification(uMessage.title, uMessage.text, new HashMap<String, String>() {{
                                 put(Constants.EXTRA_CHAT_URL, echatUrl);
                                 put(Constants.EXTRA_COMPANY_ID, chatCompanyId);
                             }});
-                }
 
-                LogUtils.iTag(TAG, "收到远程推送: 把content：" + uMessage.text + ", 存储到本地 用于消息列表显示");
-                if (!TextUtils.isEmpty(uMessage.text)) {
-                    SPUtils.getInstance().put(NOTIFICATION_LAST_CONTENT, uMessage.text);
-                    Intent intent = new Intent();
-                    Bundle bundle = new Bundle();
-                    bundle.putString(NOTIFICATION_LAST_CONTENT, uMessage.text);
-                    intent.putExtras(bundle);
-                    intent.setAction(ACTION_UPDATE_LAST_CONTENT);
-                    sendBroadcast(intent);
+                    getRemoteUnread(context, chatCompanyId, localUnreadCount, uMessage.title, echatUrl);
                 }
 
                 LogUtils.d(TAG, "这是友盟消息推送 回调：" + uMessage.getRaw().toString());
@@ -320,6 +313,50 @@ public class App extends Application {
                 LogUtils.d(TAG, "UM register failed: " + s + " " + s1);
             }
         });
+    }
+
+    private volatile boolean isRequest = false;
+
+    private void getRemoteUnread(Context context, String companyId, int localCount, String title, String echatUrl) {
+        if (!isRequest) {
+            isRequest = true;
+            final String metaData = SPUtils.getInstance().getString(METADATA_ONLY_UID, null);
+            EChatUtils.getUnreadCount(this,
+                    companyId,
+                    metaData,
+                    null,
+                    null,
+                    new EChatUtils.GetUnreadCountCallback() {
+                        @Override
+                        public void onAPIChange(int count, String content, Long tm) {
+                            LogUtils.iTag("UNREAD", String.format("unread count :%d ，last content:%s, timestamp : %d", count, content, tm), "请求完毕");
+                            isRequest = false;
+                            long notificationTm = EChatUtils.getLastChatTime();
+                            if (notificationTm < tm) {
+                                //更新时间戳
+                                EChatUtils.sendLastChatInformation(getBaseContext(), content, tm);
+                                EChatUtils.sendRemoteUnreadCount(getBaseContext(), count, tm);
+                                //修改新通知
+
+                                final RemoteNotificationUtils notification = RemoteNotificationUtils.getInstance(context);
+                                notification
+                                        .setNotificationId(Integer.parseInt(companyId))
+                                        .setCount(localCount + count)
+                                        .showNotification(title, content, new HashMap<String, String>() {{
+                                            put(Constants.EXTRA_CHAT_URL, echatUrl);
+                                            put(Constants.EXTRA_COMPANY_ID, companyId);
+                                        }});
+                            }
+                        }
+
+                        @Override
+                        public void fail(int errocde, String msg) {
+                            LogUtils.eTag("UNREAD", errocde, msg, "请求完毕");
+                            isRequest = false;
+                        }
+                    }
+            );
+        }
     }
 
     /**

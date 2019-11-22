@@ -6,6 +6,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.blankj.utilcode.util.EncodeUtils;
+import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.github.echat.chat.utils.EChatUtils;
 
@@ -66,15 +67,15 @@ public class DataViewModel extends ViewModel {
     }
 
     public void loadUnreadCount() {
-        final int count = SPUtils.getInstance().getInt(Constants.UNREAD_COUNT);
-        final int remoteCount = SPUtils.getInstance().getInt(Constants.REMOTE_UNREAD_COUNT);
+        final int count = EChatUtils.getLocalUnreadCount();
+        final int remoteCount = EChatUtils.getRemoteUnreadCount();
         unReadRemoteCount.setValue(remoteCount);
         unReadCount.setValue(count);
     }
 
     public void saveUnreadCount() {
-        SPUtils.getInstance().put(Constants.UNREAD_COUNT, unReadCount.getValue());
-        SPUtils.getInstance().put(Constants.REMOTE_UNREAD_COUNT, unReadRemoteCount.getValue());
+        EChatUtils.setLocalUnreadCount(unReadCount.getValue());
+        EChatUtils.setRemoteUnreadCount(unReadCount.getValue());
     }
 
     /**
@@ -91,13 +92,19 @@ public class DataViewModel extends ViewModel {
                 null,
                 new EChatUtils.GetUnreadCountCallback() {
                     @Override
-                    public void onCountChange(int count) {
-                        unReadCount.setValue(count);
+                    public void onAPIChange(int count, String content, Long tm) {
+                        LogUtils.iTag("UNREAD", String.format("unread count :%d", count));
+                        LogUtils.iTag("UNREAD", String.format("last content:%s, timestamp : %d", content, tm));
+                        //获得最新远程服务器未读消息数 和 时间戳
+                        EChatUtils.sendLastChatInformation(context, content, tm);
+                        unReadRemoteCount.setValue(count);
+                        saveData();
+                        EChatUtils.sendRemoteUnreadCount(context, count, tm);
                     }
 
                     @Override
-                    public void fail(String msg) {
-
+                    public void fail(int errcode, String msg) {
+                        LogUtils.eTag("UNREAD", errcode, msg);
                     }
                 }
         );

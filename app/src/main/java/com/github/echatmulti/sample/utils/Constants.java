@@ -21,8 +21,6 @@ public interface Constants {
     String ECHATTAG2 = "echatTag2";
     String LASTCHAT = "lastChat";
     String ROUTEENTRANCEID = "routeEntranceId";
-    String UNREAD_COUNT = "chat_unread_count";
-    String REMOTE_UNREAD_COUNT = "chat_remote_unread_count";
 
     String STATUSBAR_COLOR = "StatusBarColor";
 

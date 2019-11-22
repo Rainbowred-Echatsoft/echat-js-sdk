@@ -18,13 +18,16 @@ import com.blankj.utilcode.util.FragmentUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SPUtils;
 import com.github.echat.chat.EChatActivity;
+import com.github.echat.chat.utils.EChatUtils;
 import com.github.echatmulti.sample.base.BaseLazyFragment;
 import com.github.echatmulti.sample.utils.DataViewModel;
 import com.github.echatmulti.sample.utils.RemoteNotificationUtils;
 
-import static com.github.echat.chat.utils.Constants.ACTION_UNREAD_COUNT;
+import static com.github.echat.chat.utils.Constants.ACTION_LOCAL_UNREAD_COUNT;
+import static com.github.echat.chat.utils.Constants.ACTION_REMOTE_UNREAD_COUNT;
 import static com.github.echat.chat.utils.Constants.ACTION_UPDATE_LAST_CONTENT;
-import static com.github.echat.chat.utils.Constants.CHAT_UNREAD_COUNT;
+import static com.github.echat.chat.utils.Constants.CHAT_LOCAL_UNREAD_COUNT;
+import static com.github.echat.chat.utils.Constants.CHAT_REMOTE_UNREAD_COUNT;
 import static com.github.echat.chat.utils.Constants.NOTIFICATION_LAST_CONTENT;
 import static com.github.echatmulti.sample.utils.Constants.STATUSBAR_COLOR;
 
@@ -51,20 +54,36 @@ public class MessageFragment extends BaseLazyFragment implements FragmentUtils.O
             String action = intent.getAction();
             Bundle bundle = intent.getExtras();
 
+            //实时更新界面数据 最后一条消息内容
             if (ACTION_UPDATE_LAST_CONTENT.equals(action)) {
-                lastContent = bundle.getString(NOTIFICATION_LAST_CONTENT);
-                LogUtils.iTag(TAG, "收到最后一条消息 广播：" + lastContent);
-                if (tvLastContent != null) {
-                    if (TextUtils.isEmpty(lastContent)) tvLastContent.setVisibility(View.GONE);
-                    tvLastContent.setText(lastContent);
+                if (!TextUtils.isEmpty(bundle.getString(NOTIFICATION_LAST_CONTENT))) {
+                    lastContent = EChatUtils.getLastChatMsgContent();
+                    LogUtils.iTag(TAG, "收到新的最后一条消息 广播：" + lastContent);
+                    if (tvLastContent != null) {
+                        if (TextUtils.isEmpty(lastContent)) tvLastContent.setVisibility(View.GONE);
+                        tvLastContent.setText(lastContent);
+                    }
+                }else {
+                    LogUtils.iTag(TAG, "只更改了时间戳");
                 }
             }
 
-            if (ACTION_UNREAD_COUNT.equals(action)) {
-                int notificationCount = bundle.getInt(CHAT_UNREAD_COUNT);
-                LogUtils.iTag(TAG, "收到修改消息数通知 -> " + notificationCount);
-                viewModel.unReadCount.setValue(notificationCount);
-                viewModel.saveUnreadCount();
+            /**
+             * 本地推送的数据
+             */
+            if (ACTION_LOCAL_UNREAD_COUNT.equals(action)) {
+                final long localUnreadCount = bundle.getInt(CHAT_LOCAL_UNREAD_COUNT);
+                LogUtils.iTag(TAG, "收到本地消息 数改变：" + viewModel.unReadCount.getValue() + " -> " + localUnreadCount);
+                viewModel.loadUnreadCount();
+            }
+
+            /**
+             * 远程推送的数据
+             */
+            else if (ACTION_REMOTE_UNREAD_COUNT.equals(action)) {
+                final long remoteUnreadCount = bundle.getInt(CHAT_REMOTE_UNREAD_COUNT);
+                LogUtils.iTag(TAG, "收到本地消息 数改变：" + viewModel.unReadRemoteCount.getValue() + " -> " + remoteUnreadCount);
+                viewModel.loadUnreadCount();
             }
         }
     }
@@ -97,6 +116,7 @@ public class MessageFragment extends BaseLazyFragment implements FragmentUtils.O
     public void initData(@Nullable Bundle bundle) {
         viewModel = initViewModel();
         viewModel.loadData();
+        viewModel.loadUnreadCount();
         color = bundle.getInt(STATUSBAR_COLOR);
         lastContent = SPUtils.getInstance().getString(NOTIFICATION_LAST_CONTENT);
         LogUtils.iTag(TAG, "这样读数据：" + viewModel.encodingKey.getValue());
@@ -126,13 +146,32 @@ public class MessageFragment extends BaseLazyFragment implements FragmentUtils.O
         viewModel.unReadCount.observe(this, new Observer<Integer>() {
             @Override
             public void onChanged(@Nullable Integer integer) {
-                if (integer == null || integer <= 0) {
+                final int unReadRemoteCount = viewModel.unReadRemoteCount.getValue();
+                int result = integer + unReadRemoteCount;
+                if (result <= 0) {
                     tvNum.setVisibility(View.GONE);
-                } else if (integer >= 100) {
+                } else if (result >= 100) {
                     tvNum.setText("..");
                     tvNum.setVisibility(View.VISIBLE);
                 } else {
-                    tvNum.setText(integer.toString());
+                    tvNum.setText(String.valueOf(result));
+                    tvNum.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        viewModel.unReadRemoteCount.observe(this, new Observer<Integer>() {
+            @Override
+            public void onChanged(@Nullable Integer integer) {
+                final int unReadCount = viewModel.unReadCount.getValue();
+                int result = integer + unReadCount;
+                if (result <= 0) {
+                    tvNum.setVisibility(View.GONE);
+                } else if (result >= 100) {
+                    tvNum.setText("..");
+                    tvNum.setVisibility(View.VISIBLE);
+                } else {
+                    tvNum.setText(String.valueOf(result));
                     tvNum.setVisibility(View.VISIBLE);
                 }
             }
@@ -141,7 +180,8 @@ public class MessageFragment extends BaseLazyFragment implements FragmentUtils.O
         receiver = new UpdateMessageReceiver();
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_UPDATE_LAST_CONTENT);
-        filter.addAction(ACTION_UNREAD_COUNT);
+        filter.addAction(ACTION_LOCAL_UNREAD_COUNT);
+        filter.addAction(ACTION_REMOTE_UNREAD_COUNT);
         getContext().registerReceiver(receiver, filter);
 
     }
@@ -149,7 +189,6 @@ public class MessageFragment extends BaseLazyFragment implements FragmentUtils.O
     @Override
     public void onDebouncingClick(@NonNull View view) {
         if (view.getId() == R.id.btn2) {
-            // TODO: 2019-11-12 打开对话
             RemoteNotificationUtils.cancelAll(getContext());
             EChatActivity.openChat(getContext(),
                     viewModel.companyId.getValue(),

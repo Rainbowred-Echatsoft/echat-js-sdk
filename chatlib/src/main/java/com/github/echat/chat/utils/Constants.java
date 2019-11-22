@@ -36,9 +36,7 @@ public interface Constants {
 
     String ACTION_UPDATE_LAST_CONTENT = "com.github.echatmulti.action.last_content";
     String NOTIFICATION_LAST_CONTENT = "notification_last_content";//broadcast or sp
+    //    String CHAT_URL = "https://es.echatsoft.com/visitor/mobile/chat.html";
+    String CHAT_URL = "https://ts.echatsoft.com/visitor/mobile/chat.html";
 
-    interface BroadcastPermission {
-        String MESSAGE_RECEIVE_PERMISSION = "com.echat.chat.RECEIVE_PERMISSION";
-        String MESSAGE_SEND_PERMISSION = "com.echat.chat.SEND_PERMISSION";
-    }
 }

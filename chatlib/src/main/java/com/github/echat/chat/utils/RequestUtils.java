@@ -6,17 +6,13 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 
-
-import com.blankj.utilcode.util.EncryptUtils;
 import com.blankj.utilcode.util.LogUtils;
-import com.github.echat.chat.BuildConfig;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -389,7 +385,7 @@ public class RequestUtils {
                         String string = response.body().string();
                         successCallBack((T) string, callBack);
                     } else {
-                        failedCallBack("服务器错误", callBack);
+                        failedCallBack(String.format("服务器错误:%d", response.code()), callBack);
                     }
                 }
             });
@@ -441,7 +437,7 @@ public class RequestUtils {
                         successCallBack((T) string, callBack);
                     } else {
                         Log.e(TAG, response.body().toString());
-                        failedCallBack("服务器错误", callBack);
+                        failedCallBack(String.format("服务器错误:%d", response.code()), callBack);
                     }
                 }
             });
@@ -482,7 +478,7 @@ public class RequestUtils {
                         successCallBack((T) string, callBack);
                     } else {
                         Log.e(TAG, response.body().string());
-                        failedCallBack("服务器错误", callBack);
+                        failedCallBack(String.format("服务器错误:%d", response.code()), callBack);
                     }
                 }
             });
@@ -526,7 +522,7 @@ public class RequestUtils {
                         Log.e(TAG, "response ----->" + string);
                         successCallBack((T) string, callBack);
                     } else {
-                        failedCallBack("服务器错误", callBack);
+                        failedCallBack(String.format("服务器错误:%d", response.code()), callBack);
                     }
                 }
             });

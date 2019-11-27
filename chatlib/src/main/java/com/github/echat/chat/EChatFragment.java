@@ -66,6 +66,7 @@ import com.echat.jzvd.JZVideoPlayer;
 import com.echat.jzvd.JZVideoPlayerStandard;
 import com.echat.matisse.Matisse;
 import com.echat.matisse.MimeType;
+import com.echat.matisse.SelectionCreator;
 import com.echat.matisse.engine.impl.GlideEngine;
 import com.echat.matisse.filter.Filter;
 import com.echat.matisse.internal.entity.CaptureStrategy;
@@ -259,6 +260,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                 openUrl = Constants.CHAT_URL;
             }
             openUrl = UrlUtils.appendParams(openUrl, new HashMap<String, String>() {{
+                put("multipleFile", "1");
                 if (!TextUtils.isEmpty(openCompanyId)) put("companyId", openCompanyId);
                 if (!TextUtils.isEmpty(pushInfo)) put("pushInfo", pushInfo);
                 if (!TextUtils.isEmpty(metaData)) put("metaData", metaData);
@@ -950,13 +952,20 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         LogUtils.iTag(TAG, "openGalaery: " + getWActivity().getPackageName() + ".fileprovider");
         if (checkStoragePermission() && checkCameraPermission()) {
             dontStopJavascript = true;
-            Matisse.from(this)
-                    .choose(MimeType.ofAll(), false)
+            SelectionCreator choose = Matisse.from(this)
+                    .choose(MimeType.ofAll(), false);
+
+            if (Build.VERSION.SDK_INT < 21) {
+                choose.maxSelectable(1);
+            } else {
+                //system >= android 5.0 support handle multiple file
+                choose.maxSelectable(9);
+            }
+            choose
                     .theme(R.style.Matisse_Custom)
                     .capture(true)
                     .captureStrategy(
                             new CaptureStrategy(true, getWActivity().getPackageName() + ".fileprovider", "test"))
-                    .maxSelectable(1)
                     .addFilter(new GifSizeFilter(320, 320, 5 * Filter.K * Filter.K))
                     .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
                     .thumbnailScale(0.85f)
@@ -996,16 +1005,28 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
      * 否者会出现Webview卡死，无法再次上传等问题
      */
     private void endToUpload() {
+        //system < Android 5.0
         if (mUploadMessage != null) {
+            if (result == null) {
+                if (results.size() > 0) {
+                    result = results.get(0);
+                }
+            }
             mUploadMessage.onReceiveValue(result);
             mUploadMessage = null;
             result = null;
+            results.clear();
         }
+        //system >= Android 5.0
         if (mUploadMessageL != null) {
-            Uri[] results = result != null ? new Uri[]{result} : null;
-            mUploadMessageL.onReceiveValue(results);
+            if (results.isEmpty()) {
+                results.add(result);
+            }
+            Uri[] res = results.toArray(new Uri[results.size()]);
+            mUploadMessageL.onReceiveValue(res);
             mUploadMessageL = null;
             result = null;
+            results.clear();
         }
     }
 
@@ -1077,8 +1098,10 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             }
 
             final List<Uri> uris = Matisse.obtainResult(intent);
+
             if (!uris.isEmpty()) {
-                result = uris.get(0);
+                // system < Android 5.0 only support one file upload
+                results.addAll(uris);
             }
 
 
@@ -1096,8 +1119,9 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             if (resultCode == CameraActivity.RESULT_CODE_NO_PERMISSION) {
                 ToastUtils.showShort("请检查相机权限");
             }
+
             if (!TextUtils.isEmpty(path)) {
-                result = Uri.fromFile(new File(path));
+                result = getFileContentUri(getWActivity(), path);
             }
 
         }
@@ -1134,6 +1158,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     private ValueCallback<Uri> mUploadMessage;
     private ValueCallback<Uri[]> mUploadMessageL;
     private Uri result;
+    private ArrayList<Uri> results = new ArrayList<>();
     private String staffNickName;
     private String staffHeadPath;
 

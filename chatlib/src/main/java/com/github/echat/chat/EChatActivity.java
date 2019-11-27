@@ -1,11 +1,14 @@
 package com.github.echat.chat;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.SPUtils;
 import com.github.echat.chat.utils.Constants;
 import com.github.echat.chat.utils.FragmentUtils;
 
@@ -39,6 +42,16 @@ public class EChatActivity extends AppCompatActivity {
 
         } else {
             LogUtils.iTag(TAG, "onCreate: " + savedInstanceState.toString());
+        }
+
+        SPUtils.getInstance().put("fixMediaError2", false);
+        if (!SPUtils.getInstance().getBoolean("fixMediaError2", false)) {
+            //clear old version media files
+            ContentResolver contentResolver = getContentResolver();
+            int count = contentResolver.delete(MediaStore.Files.getContentUri("external"),
+                    MediaStore.MediaColumns.DATA + " like ?",
+                    new String[]{"%com.echat.echatjsdemo.single/files/DCIM/Echat%"});
+            SPUtils.getInstance().put("fixMediaError2", true);
         }
     }
 
@@ -85,10 +98,10 @@ public class EChatActivity extends AppCompatActivity {
     /**
      * 打开对话
      *
-     * @param companyId    公司id
-     * @param pushInfo     推送信息
-     * @param metaData     客户加密数据
-     * @param visEvt       图文消息
+     * @param companyId 公司id
+     * @param pushInfo  推送信息
+     * @param metaData  客户加密数据
+     * @param visEvt    图文消息
      */
     public static void openChat(Context context, String companyId, String pushInfo, String metaData, String visEvt, String echatTag, String routeEntranceId) {
         Intent intent = new Intent(context, EChatActivity.class);

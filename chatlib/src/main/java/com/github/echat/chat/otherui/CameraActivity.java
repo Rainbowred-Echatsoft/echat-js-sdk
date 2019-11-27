@@ -11,9 +11,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
-import com.echat.cameralibrary.CaptureLayout;
 import com.echat.cameralibrary.JCameraView;
 import com.echat.cameralibrary.listener.ClickListener;
 import com.echat.cameralibrary.listener.ErrorListener;
@@ -22,7 +20,6 @@ import com.echat.cameralibrary.util.FileUtil;
 import com.github.echat.chat.R;
 
 import java.io.File;
-import java.lang.reflect.Field;
 
 
 public class CameraActivity extends AppCompatActivity {
@@ -52,9 +49,11 @@ public class CameraActivity extends AppCompatActivity {
         if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             path = PathUtils.getInternalAppCachePath();
         } else {
-            path = PathUtils.getExternalAppDcimPath();
+
+            path = PathUtils.getExternalDcimPath();
         }
-        path = path + File.separator + "Echat";
+
+        path = path + File.separator + "EChat";
         jCameraView.setSaveVideoPath(path);
         jCameraView.setFeatures(JCameraView.BUTTON_STATE_BOTH);
         jCameraView.setTip("轻触拍照，长按摄像");

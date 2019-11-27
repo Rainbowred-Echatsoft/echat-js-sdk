@@ -50,7 +50,7 @@ dependencies {
         exclude group: 'com.android.support'
     }
     //图库
-    api 'com.echatsoft.echatsdk:imagepicker:1.0.1-beta3'//支持Android 10
+    api 'com.echatsoft.echatsdk:imagepicker:1.0.1-beta4'//支持Android 10
     // 微信拍照
     api 'com.echatsoft.echatsdk:cameralibrary:1.0.0-beta5'
     // 网络请求库

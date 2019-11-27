@@ -1019,7 +1019,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         }
         //system >= Android 5.0
         if (mUploadMessageL != null) {
-            if (results.isEmpty()) {
+            if (results.isEmpty() && result != null) {
                 results.add(result);
             }
             Uri[] res = results.toArray(new Uri[results.size()]);

@@ -8,6 +8,7 @@ import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -31,6 +32,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.Toolbar;
@@ -52,7 +54,9 @@ import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.blankj.utilcode.constant.PermissionConstants;
 import com.blankj.utilcode.util.AppUtils;
@@ -61,6 +65,7 @@ import com.blankj.utilcode.util.ImageUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
 import com.blankj.utilcode.util.PermissionUtils;
+import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.echat.jzvd.JZVideoPlayer;
 import com.echat.jzvd.JZVideoPlayerStandard;
@@ -82,12 +87,15 @@ import com.github.echat.chat.utils.JZMediaIjkplayer;
 import com.github.echat.chat.utils.RequestUtils;
 import com.github.echat.chat.utils.UrlUtils;
 import com.maning.imagebrowserlibrary.MNImageBrowser;
+import com.maning.imagebrowserlibrary.listeners.OnLongClickListener;
+import com.maning.imagebrowserlibrary.listeners.OnPageChangeListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1037,15 +1045,169 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
      * @param current
      */
     private void previewImage(ArrayList<String> imageUrls, int current) {
+        View customView = LayoutInflater.from(getWActivity()).inflate(R.layout.layout_custom_view, null);
+        ImageView ic_close = customView.findViewById(R.id.iv_close);
+        final TextView tv_number_indicator = customView.findViewById(R.id.tv_number_indicator);
+        ic_close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //关闭图片浏览
+                MNImageBrowser.finishImageBrowser();
+            }
+        });
+
+        tv_number_indicator.setText((current + 1) + "/" + imageUrls.size());
+
         MNImageBrowser.with(getWActivity())
                 .setCurrentPosition(current)
                 .setImageEngine(new GlideImageEngine())
                 .setImageList(imageUrls)
+                //设置自定义遮盖层，定制自己想要的效果，当设置遮盖层后，原本的指示器会被隐藏
+                .setCustomShadeView(customView)
                 .setCustomProgressViewLayoutID(R.layout.layout_custom_progress_view_echat)
                 .setIndicatorHide(false)
+                .setOnLongClickListener(new OnLongClickListener() {
+                    @Override
+                    public void onLongClick(final FragmentActivity activity, final ImageView imageView, int position, String url) {
+                        showListDialog(activity, imageView);
+                    }
+                })
+                .setOnPageChangeListener(new OnPageChangeListener() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        if (tv_number_indicator != null) {
+                            tv_number_indicator.setText((position + 1) + "/" + MNImageBrowser.getImageList().size());
+                        }
+                    }
+                })
                 .setFullScreenMode(true)
                 .show(mWebView);
     }
+
+
+    public static final String PIC_DIR_NAME = "EChat";
+    private File mPicDir = new File(PathUtils.getExternalPicturesPath(), PIC_DIR_NAME); //图片统一保存在系统的图片文件夹中
+
+    private void showListDialog(final FragmentActivity activity, final ImageView imageView) {
+        new ListFragmentDialog(new ListFragmentDialog.OnItemClickListener() {
+            @Override
+            public void onClick(int position) {
+                if (position == 1) {
+                    //检查权限
+                    //申请权限
+                    PermissionUtils.permission(PermissionConstants.STORAGE)
+                            .rationale(new PermissionUtils.OnRationaleListener() {
+                                @Override
+                                public void rationale(ShouldRequest shouldRequest) {
+                                    showRationaleDialog(shouldRequest, getWActivity());
+                                }
+                            }).callback(new PermissionUtils.SimpleCallback() {
+                        @Override
+                        public void onGranted() {
+                            if (!mPicDir.exists()) {
+                                mPicDir.mkdirs();
+                            }
+                            if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+                                ToastUtils.showLong("保存失败，目标不可存储");
+                                return;
+                            }
+
+                            //>50M allow save
+                            if (getUsableSpace(mPicDir) < 50 * 1024 * 1024) {
+                                ToastUtils.showLong("空间不足50M不进行存储");
+                                return;
+                            }
+
+                            //保存图片
+                            imageView.buildDrawingCache(true);
+                            imageView.buildDrawingCache();
+                            Bitmap bitmap = imageView.getDrawingCache();
+                            ThreadUtils.executeByCpu(new ThreadUtils.SimpleTask<Boolean>() {
+                                @Override
+                                public Boolean doInBackground() throws Throwable {
+                                    String filename = "image_" + System.currentTimeMillis() + ".jpg";
+                                    boolean flag = insertImage(bitmap, filename) != null;
+                                    //生成名字
+                                    imageView.setDrawingCacheEnabled(false);
+                                    return flag;
+                                }
+
+                                @Override
+                                public void onSuccess(Boolean result) {
+                                    if (result) {
+                                        ToastUtils.showLong("保存成功");
+                                    } else {
+                                        ToastUtils.showLong("保存失败");
+                                    }
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onDenied() {
+                            showOpenAppSettingDialog();
+                        }
+                    }).request();
+
+                }
+            }
+        }).show(activity.getSupportFragmentManager(), "");
+    }
+
+    public long getUsableSpace(File path) {
+        if (path == null) {
+            return -1;
+        }
+        return path.getUsableSpace();
+
+    }
+
+    public String insertImage(Bitmap source,
+                              String fileName) {
+        ContentResolver cr = getWActivity().getContentResolver();
+        String mPicPath = new File(mPicDir, fileName).getAbsolutePath();
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.ImageColumns.DATA, mPicPath);
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        values.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, fileName);
+        //将图片的拍摄时间设置为当前的时间
+        values.put(MediaStore.Images.ImageColumns.DATE_TAKEN, String.valueOf(System.currentTimeMillis()));
+        Uri uri = null;
+        String stringUrl = null;
+        try {
+            uri = cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            if (source != null) {
+                OutputStream imageOut = cr.openOutputStream(uri);
+                try {
+                    source.compress(Bitmap.CompressFormat.JPEG, 100, imageOut);
+                } finally {
+                    imageOut.flush();
+                    imageOut.close();
+                }
+                long id = ContentUris.parseId(uri);
+                // Wait until MINI_KIND thumbnail is generated.
+                Bitmap miniThumb = MediaStore.Images.Thumbnails.getThumbnail(cr, id,
+                        MediaStore.Images.Thumbnails.MINI_KIND, null);
+            } else {
+                Log.e(TAG, "Failed to create thumbnail, removing original");
+                cr.delete(uri, null, null);
+                uri = null;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to insert image", e);
+            if (uri != null) {
+                cr.delete(uri, null, null);
+                uri = null;
+            }
+        }
+
+        if (uri != null) {
+            stringUrl = uri.toString();
+        }
+
+        return stringUrl;
+    }
+
 
     /**
      * 接管视频播放

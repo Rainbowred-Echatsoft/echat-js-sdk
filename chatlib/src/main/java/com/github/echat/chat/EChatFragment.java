@@ -290,7 +290,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         toolbar.inflateMenu(R.menu.menu_echat);
         endChat = toolbar.getMenu().findItem(R.id.endChat);
         toolbar.setOnMenuItemClickListener(this);
-        toolbar.setTitle("...");
+        toolbar.setTitle("等待接入");
         toolbar.setNavigationIcon(R.drawable.echat_ic_back_black);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -1658,7 +1658,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             }
             endChat.setVisible(true);
         } else if (chatStatus.contains("end")) {
-            updateTitle("...");
+            updateTitle("等待接入");
             endChat.setVisible(false);
             String env = chatStatus.split("-")[2];
             String visitor = chatStatus.split("-")[1];

@@ -70,12 +70,12 @@ public class EChatWebviewBottomSheetDialog extends EChatBottomSheetDialog {
         int colorPrimary = typedValue.data;
 
         //设置控件
-        final RelativeLayout toolbar = (RelativeLayout) view.findViewById(R.id.toolbarLayout);
-        ivToolbarNavigation = (ImageView) view.findViewById(R.id.ivToolbarNavigation);
-        tvToolbarTitle = (TextView) view.findViewById(R.id.tvToolbarTitle);
-        llToolbarClose = (LinearLayout) view.findViewById(R.id.llToolbarClose);
-        mWebview = (EChatCustomWebview) view.findViewById(R.id.webview);
-        mProgress = (ProgressBar) view.findViewById(android.R.id.progress);
+        final RelativeLayout toolbar = view.findViewById(R.id.toolbarLayout);
+        ivToolbarNavigation = view.findViewById(R.id.ivToolbarNavigation);
+        tvToolbarTitle = view.findViewById(R.id.tvToolbarTitle);
+        llToolbarClose = view.findViewById(R.id.llToolbarClose);
+        mWebview = view.findViewById(R.id.webview);
+        mProgress = view.findViewById(android.R.id.progress);
 
         //设置toolbar颜色 圆角
         float[] outerRadius = {10, 10, 10, 10, 0, 0, 0, 0};
@@ -168,15 +168,23 @@ public class EChatWebviewBottomSheetDialog extends EChatBottomSheetDialog {
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
             Uri url = request.getUrl();
             if (url != null) {
-                view.loadUrl(url.toString());
+                if (url.toString().startsWith("http")) {
+                    view.loadUrl(url.toString());
+                } else {
+                    return false;
+                }
             }
             return true;
         }
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            view.loadUrl(url);
-            return true;
+            if (url.startsWith("http")) {
+                view.loadUrl(url);
+                return true;
+            } else {
+                return false;
+            }
         }
 
         @Override
@@ -185,8 +193,6 @@ public class EChatWebviewBottomSheetDialog extends EChatBottomSheetDialog {
                 mProgress.setVisibility(View.GONE);
             }
         }
-
-
     };
 
     private WebChromeClient mWebChromeClient = new WebChromeClient() {

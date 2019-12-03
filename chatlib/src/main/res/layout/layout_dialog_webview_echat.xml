@@ -63,6 +63,7 @@
 
 
     <FrameLayout
+
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -83,6 +84,12 @@
             android:layout_height="3dp"
             android:progress="0"
             android:progressDrawable="@drawable/echat_progress_horizontal_wv" />
+
+        <FrameLayout
+            android:visibility="gone"
+            android:id="@+id/videoContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     </FrameLayout>
 
 </LinearLayout>

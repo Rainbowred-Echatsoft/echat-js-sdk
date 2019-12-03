@@ -1,7 +1,10 @@
 package com.github.echat.chat.otherui.widget;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.RectF;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
@@ -19,12 +22,14 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.github.echat.chat.BuildConfig;
 import com.github.echat.chat.R;
 
@@ -45,6 +50,8 @@ public class EChatWebviewBottomSheetDialog extends EChatBottomSheetDialog {
     private EChatCustomWebview mWebview;
     private boolean isCanBack = true;
     private boolean isShowNavBack = true;
+    private FrameLayout mVideoContainer;
+    private WebChromeClient.CustomViewCallback mCallBack;
 
     public EChatWebviewBottomSheetDialog(@NonNull Context context) {
         super(context);
@@ -74,6 +81,7 @@ public class EChatWebviewBottomSheetDialog extends EChatBottomSheetDialog {
         ivToolbarNavigation = view.findViewById(R.id.ivToolbarNavigation);
         tvToolbarTitle = view.findViewById(R.id.tvToolbarTitle);
         llToolbarClose = view.findViewById(R.id.llToolbarClose);
+        mVideoContainer = view.findViewById(R.id.videoContainer);
         mWebview = view.findViewById(R.id.webview);
         mProgress = view.findViewById(android.R.id.progress);
 
@@ -217,9 +225,32 @@ public class EChatWebviewBottomSheetDialog extends EChatBottomSheetDialog {
                 }
             }
         }
+
+        @Override
+        public void onShowCustomView(View view, CustomViewCallback callback) {
+            LogUtils.i("onShowCustomView");
+            mWebview.setVisibility(View.GONE);
+            mVideoContainer.setVisibility(View.VISIBLE);
+            mVideoContainer.addView(view);
+            mCallBack = callback;
+            super.onShowCustomView(view, callback);
+        }
+
+        @Override
+        public void onHideCustomView() {
+            LogUtils.i("onHideCustomView");
+            if (mCallBack != null) {
+                mCallBack.onCustomViewHidden();
+                mCallBack = null;
+            }
+            mWebview.setVisibility(View.VISIBLE);
+            mVideoContainer.removeAllViews();
+            mVideoContainer.setVisibility(View.GONE);
+            super.onHideCustomView();
+        }
     };
 
-
+    
     private void exceJSFunction(String funName, String content) {
         String trigger = "javascript:" + funName + "(" + content + ")";
         loadJS(trigger);

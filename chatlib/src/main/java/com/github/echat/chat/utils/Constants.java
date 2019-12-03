@@ -20,6 +20,10 @@ public interface Constants {
     String ACTION_LOCAL_UNREAD_COUNT = "com.echat.chat.action.LOCAL_UNREAD_COUNT";
     String ACTION_REMOTE_UNREAD_COUNT = "com.echat.chat.action.REMOTE_UNREAD_COUNT";
 
+    String EXTRA_VIDEO_URL = "extra_video_url";
+    String EXTRA_VIDEO_FILE_NAME = "extra_video_file_name";
+    String ACTION_DOWNLOAD_VIDEO = "com.echat.chat.action.DOWNLOAD_VIDEO";
+
     String EXTRA_CHAT_URL = "chat_url";
     String CHAT_COMPANY_ID = "chat_company_id";
     String CHAT_COMPANY_NAME = "chat_company_name";
@@ -33,7 +37,7 @@ public interface Constants {
     String EXTRA_BROWER_URL = "extra_brower_url";
 
     String API_HOST = "https://eapi.echatsoft.com";
-//    String API_HOST = "https://tapi.echatsoft.com";
+    //    String API_HOST = "https://tapi.echatsoft.com";
     String SEND_VISEVT_APIURL = API_HOST + "/pushVisitorEvent";
     String GET_UNREAD_COUNT_APIURL = API_HOST + "/getVisitorUnReadMsgCount/1.1";
 //    String GET_UNREAD_COUNT_APIURL = API_HOST + "/getVisitorUnReadMsgCount";

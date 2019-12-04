@@ -44,14 +44,16 @@ public class EChatActivity extends AppCompatActivity {
             LogUtils.iTag(TAG, "onCreate: " + savedInstanceState.toString());
         }
 
-        SPUtils.getInstance().put("fixMediaError2", false);
-        if (!SPUtils.getInstance().getBoolean("fixMediaError2", false)) {
-            //clear old version media files
-            ContentResolver contentResolver = getContentResolver();
-            int count = contentResolver.delete(MediaStore.Files.getContentUri("external"),
-                    MediaStore.MediaColumns.DATA + " like ?",
-                    new String[]{"%com.echat.echatjsdemo.single/files/DCIM/Echat%"});
-            SPUtils.getInstance().put("fixMediaError2", true);
+        if (EChatFragment.checkStoragePermission()) {
+            SPUtils.getInstance().put("fixMediaError2", false);
+            if (!SPUtils.getInstance().getBoolean("fixMediaError2", false)) {
+                //clear old version media files
+                ContentResolver contentResolver = getContentResolver();
+                int count = contentResolver.delete(MediaStore.Files.getContentUri("external"),
+                        MediaStore.MediaColumns.DATA + " like ?",
+                        new String[]{"%com.echat.echatjsdemo.single/files/DCIM/Echat%"});
+                SPUtils.getInstance().put("fixMediaError2", true);
+            }
         }
     }
 

@@ -921,11 +921,11 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
      *
      * @return
      */
-    private boolean checkStoragePermission() {
+    public static boolean checkStoragePermission() {
         return PermissionUtils.isGranted(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
-    private boolean checkCameraPermission() {
+    public static boolean checkCameraPermission() {
         return PermissionUtils.isGranted(Manifest.permission.CAMERA);
     }
 

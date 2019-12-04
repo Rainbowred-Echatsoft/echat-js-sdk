@@ -35,6 +35,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.FileProvider;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -67,6 +68,7 @@ import com.blankj.utilcode.util.PathUtils;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.ThreadUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.echat.jzvd.JZDataSource;
 import com.echat.jzvd.JZVideoPlayer;
 import com.echat.jzvd.JZVideoPlayerStandard;
 import com.echat.matisse.Matisse;
@@ -77,6 +79,8 @@ import com.echat.matisse.filter.Filter;
 import com.echat.matisse.internal.entity.CaptureStrategy;
 import com.github.echat.chat.otherui.BrowserActivity;
 import com.github.echat.chat.otherui.CameraActivity;
+import com.github.echat.chat.otherui.CustomVideoPlayerStandard;
+import com.github.echat.chat.otherui.ListFragmentDialog;
 import com.github.echat.chat.otherui.WebviewBottomDialogActivity;
 import com.github.echat.chat.utils.Constants;
 import com.github.echat.chat.utils.EChatUtils;
@@ -309,6 +313,8 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
         getWActivity().registerReceiver(downloadCompleteReceiver, intentFilter);
+        downloadVideoReceiver = new DownloadVideoReceiver();
+        LocalBroadcastManager.getInstance(getWActivity()).registerReceiver(downloadVideoReceiver, new IntentFilter(Constants.ACTION_DOWNLOAD_VIDEO));
     }
 
     private void init(@Nullable Bundle savedInstanceState, @Nullable View contentView) {
@@ -357,6 +363,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         LogUtils.iTag(TAG, "onDestroyView:  " + this);
         destroyView = true;
         getWActivity().unregisterReceiver(downloadCompleteReceiver);
+        LocalBroadcastManager.getInstance(getWActivity()).unregisterReceiver(downloadVideoReceiver);
 
         /**
          * 安全销毁回收Fragment资源
@@ -567,6 +574,39 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         LogUtils.wTag(TAG, String.format("downloadId:{%s}", downloadId));
     }
 
+    private ArrayList<Long> downloadIdList = new ArrayList<>();
+
+    private void downloadBySystem(String url, String fileName) {
+        // 指定下载地址ttu
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        // 允许媒体扫描，根据下载的文件类型被加入相册、音乐等媒体库
+        request.allowScanningByMediaScanner();
+        // 设置通知的显示类型，下载进行时和完成后显示通知
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.allowScanningByMediaScanner();//设置允许被扫描到
+        // 允许在计费流量下下载
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            request.setAllowedOverMetered(true);
+        }
+        // 允许该记录在下载管理界面可见
+        request.setVisibleInDownloadsUi(true);
+        // 允许漫游时下载
+        request.setAllowedOverRoaming(true);
+        // 允许下载的网路类型
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);
+        // 设置下载文件保存的路径和文件名
+        LogUtils.wTag(TAG, String.format("filename:{%s}", fileName));
+        // 设置通知栏的标题，如果不设置，默认使用文件名
+        request.setTitle("下载：" + fileName);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DCIM, fileName);
+        request.allowScanningByMediaScanner();
+        final DownloadManager downloadManager = (DownloadManager) getWActivity().getSystemService(DOWNLOAD_SERVICE);
+        // 添加一个下载任务
+        long downloadId = downloadManager.enqueue(request);
+        downloadIdList.add(downloadId);
+        LogUtils.wTag(TAG, String.format("downloadId:{%s}", downloadId));
+    }
+
 
     private class DownloadCompleteReceiver extends BroadcastReceiver {
         @Override
@@ -577,7 +617,12 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                 if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(intent.getAction())) {
                     long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
                     LogUtils.iTag(TAG, String.format("downloadId:{%s}", downloadId));
-                    openDownloadedAttachment(getWActivity(), downloadId);
+                    if (downloadIdList.contains(downloadId)) {
+                        ToastUtils.showShort("保存成功");
+                        downloadIdList.remove(downloadId);
+                    } else {
+                        openDownloadedAttachment(getWActivity(), downloadId);
+                    }
                 }
             }
         }
@@ -1069,7 +1114,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                 .setOnLongClickListener(new OnLongClickListener() {
                     @Override
                     public void onLongClick(final FragmentActivity activity, final ImageView imageView, int position, String url) {
-                        showListDialog(activity, imageView);
+                        showImageDownloadListDialog(activity, imageView);
                     }
                 })
                 .setOnPageChangeListener(new OnPageChangeListener() {
@@ -1088,7 +1133,37 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     public static final String PIC_DIR_NAME = "EChat";
     private File mPicDir = new File(PathUtils.getExternalPicturesPath(), PIC_DIR_NAME); //图片统一保存在系统的图片文件夹中
 
-    private void showListDialog(final FragmentActivity activity, final ImageView imageView) {
+    private void showVideoDownloadListDialog(final FragmentActivity activity, final String downloadUrl, final String fileName) {
+        new ListFragmentDialog(new ListFragmentDialog.OnItemClickListener() {
+            @Override
+            public void onClick(int position) {
+                if (position == 1) {
+                    //检查权限
+                    //申请权限
+                    PermissionUtils.permission(PermissionConstants.STORAGE)
+                            .rationale(new PermissionUtils.OnRationaleListener() {
+                                @Override
+                                public void rationale(ShouldRequest shouldRequest) {
+                                    showRationaleDialog(shouldRequest, getWActivity());
+                                }
+                            }).callback(new PermissionUtils.SimpleCallback() {
+                        @Override
+                        public void onGranted() {
+                            ToastUtils.showShort("正在下载");
+                            downloadBySystem(downloadUrl, fileName);
+                        }
+
+                        @Override
+                        public void onDenied() {
+                            showOpenAppSettingDialog();
+                        }
+                    }).request();
+                }
+            }
+        }).show(activity.getSupportFragmentManager(), "");
+    }
+
+    private void showImageDownloadListDialog(final FragmentActivity activity, final ImageView imageView) {
         new ListFragmentDialog(new ListFragmentDialog.OnItemClickListener() {
             @Override
             public void onClick(int position) {
@@ -1213,15 +1288,34 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
      * 接管视频播放
      *
      * @param videoUrl
-     * @param thumbUrl
+     * @param fileName
      */
-    private void playVideo(String videoUrl, String thumbUrl) {
+    private void playVideo(String videoUrl, String fileName) {
         //bilibili ijkplayer默认不提供https
         if (videoUrl.startsWith("https:")) {
             videoUrl = videoUrl.replace("https:", "http:");
         }
         JZVideoPlayerStandard.setMediaInterface(new JZMediaIjkplayer());
-        JZVideoPlayerStandard.startFullscreen(getWActivity(), JZVideoPlayerStandard.class, videoUrl, "视频");
+        JZDataSource jzDataSource = new JZDataSource(videoUrl, "视频");
+        jzDataSource.objects = new Object[]{fileName};
+        JZVideoPlayerStandard.startFullscreen(getWActivity(), CustomVideoPlayerStandard.class, jzDataSource);
+    }
+
+    private DownloadVideoReceiver downloadVideoReceiver;
+
+    class DownloadVideoReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            Bundle bundle = intent.getExtras();
+
+            if (Constants.ACTION_DOWNLOAD_VIDEO.equals(action)) {
+                String videoUrl = bundle.getString(Constants.EXTRA_VIDEO_URL);
+                String fileName = bundle.getString(Constants.EXTRA_VIDEO_FILE_NAME);
+                LogUtils.i(String.format("download file:%s", fileName));
+                showVideoDownloadListDialog((FragmentActivity) getWActivity(), videoUrl, fileName);
+            }
+        }
     }
 
     public static Uri getFileContentUri(Context context, String absPath) {
@@ -1427,18 +1521,19 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                 /**
                  * 接管播放视频
                  */
-                if ("video".equals(functionName)) {
+                if ("videoV2".equals(functionName)) {
                     JSONObject video = new JSONObject(value);
                     final String videoUrl = video.optString("url");
                     final String thumbUrl = video.getString("thumbUrl");
+                    final String downloadUrl = video.getString("downloadUrl");
+                    final String fileName = video.getString("fileName");
                     LogUtils.iTag(TAG, "video value = " + video.toString());
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            playVideo(videoUrl, thumbUrl);
+                            playVideo(downloadUrl, fileName);
                         }
                     });
-
                 }
 
                 /**

@@ -1,4 +1,4 @@
-package com.github.echat.chat;
+package com.github.echat.chat.otherui;
 
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import com.github.echat.chat.R;
 import com.maning.mndialoglibrary.base.BaseFragmentDialog;
 
 @SuppressLint("ValidFragment")
@@ -18,7 +19,6 @@ public class ListFragmentDialog extends BaseFragmentDialog {
     private OnItemClickListener onItemClickListener;
 
     private Button btn_cancle;
-    private Button btn_other;
     private Button btn_save;
     private RelativeLayout rl_bg;
 

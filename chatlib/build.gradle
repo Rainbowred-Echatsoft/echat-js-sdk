@@ -54,7 +54,7 @@ dependencies {
     //图库
     api 'com.echatsoft.echatsdk:imagepicker:1.0.1-beta4'//支持Android 10
     // 微信拍照
-    api 'com.echatsoft.echatsdk:cameralibrary:1.0.0-beta5'
+    api 'com.echatsoft.echatsdk:cameralibrary:1.0.0-beta6'
     // 网络请求库
     compileOnly 'com.squareup.okhttp3:okhttp:3.12.1'
 

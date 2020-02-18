@@ -1,6 +1,6 @@
 package com.github.echat.chat.utils.aes;
 
-import android.support.annotation.Keep;
+import androidx.annotation.Keep;
 
 import java.util.ArrayList;
 

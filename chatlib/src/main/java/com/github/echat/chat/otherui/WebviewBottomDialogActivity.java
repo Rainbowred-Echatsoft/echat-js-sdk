@@ -3,7 +3,7 @@ package com.github.echat.chat.otherui;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 

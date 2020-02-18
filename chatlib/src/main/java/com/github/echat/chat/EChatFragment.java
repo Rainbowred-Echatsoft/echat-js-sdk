@@ -27,16 +27,20 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.BottomSheetDialog;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.FileProvider;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.widget.Toolbar;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.core.content.FileProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.appcompat.widget.Toolbar;
+
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -80,7 +84,7 @@ import com.echat.matisse.internal.entity.CaptureStrategy;
 import com.github.echat.chat.otherui.BrowserActivity;
 import com.github.echat.chat.otherui.CameraActivity;
 import com.github.echat.chat.otherui.CustomVideoPlayerStandard;
-import com.github.echat.chat.otherui.ListFragmentDialog;
+import com.github.echat.chat.otherui.ListDialog;
 import com.github.echat.chat.otherui.WebviewBottomDialogActivity;
 import com.github.echat.chat.utils.Constants;
 import com.github.echat.chat.utils.EChatUtils;
@@ -427,7 +431,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
      */
     public void showOpenAppSettingDialog() {
         if (getWActivity() == null) return;
-        new android.support.v7.app.AlertDialog.Builder(getWActivity())
+        new androidx.appcompat.app.AlertDialog.Builder(getWActivity())
                 .setTitle(android.R.string.dialog_alert_title)
                 .setMessage(R.string.permission_denied_forever_message)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -1134,7 +1138,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     private File mPicDir = new File(PathUtils.getExternalPicturesPath(), PIC_DIR_NAME); //图片统一保存在系统的图片文件夹中
 
     private void showVideoDownloadListDialog(final FragmentActivity activity, final String downloadUrl, final String fileName) {
-        new ListFragmentDialog(new ListFragmentDialog.OnItemClickListener() {
+        new ListDialog.Builder(getWActivity()).setOnItemClickListener( new ListDialog.OnItemClickListener() {
             @Override
             public void onClick(int position) {
                 if (position == 1) {
@@ -1160,11 +1164,11 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                     }).request();
                 }
             }
-        }).show(activity.getSupportFragmentManager(), "");
+        }).build().show();
     }
 
     private void showImageDownloadListDialog(final FragmentActivity activity, final ImageView imageView) {
-        new ListFragmentDialog(new ListFragmentDialog.OnItemClickListener() {
+        new ListDialog.Builder(getWActivity()).setOnItemClickListener(new ListDialog.OnItemClickListener() {
             @Override
             public void onClick(int position) {
                 if (position == 1) {
@@ -1226,7 +1230,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
 
                 }
             }
-        }).show(activity.getSupportFragmentManager(), "");
+        }).build().show();
     }
 
     public long getUsableSpace(File path) {

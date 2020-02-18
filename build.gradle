@@ -15,6 +15,9 @@ buildscript {
 
 allprojects {
     repositories {
+        maven {
+            url 'https://maven.echatsoft.com/echat/app/sdk'
+        }
         google()
         jcenter()
         maven { url "https://jitpack.io" }

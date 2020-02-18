@@ -8,10 +8,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.design.widget.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.View;
@@ -19,6 +18,8 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.multidex.MultiDex;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PathUtils;
@@ -53,7 +54,6 @@ import java.util.List;
 import static com.github.echatmulti.sample.utils.Constants.ACTION_DEVICE_TOKEN;
 import static com.github.echatmulti.sample.utils.Constants.APPID;
 import static com.github.echatmulti.sample.utils.Constants.APPID_DEFAULT;
-import static com.github.echatmulti.sample.utils.Constants.COMPANY_ID;
 import static com.github.echatmulti.sample.utils.Constants.DEVICE_TOKEN_FUN;
 import static com.github.echatmulti.sample.utils.Constants.METADATA_ONLY_UID;
 import static com.github.echatmulti.sample.utils.Constants.TOKEN;
@@ -69,6 +69,13 @@ public class App extends Application {
     private class Runhandler extends Handler {
 
     }
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
+
 
     @Override
     public void onCreate() {

@@ -59,11 +59,11 @@ dependencies {
 
 
     api 'com.echatsoft.echatsdk:videoplayerx:1.0.0-beta3'
-    api 'tv.danmaku.ijk.media:ijkplayer-java:0.8.4'
-    api 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.4'
-    api 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.4'
-    api 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.4'
-    api 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.4'
+    api 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
+    api 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'
+    api 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.8'
+    api 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.8'
+    api 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.8'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0'

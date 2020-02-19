@@ -997,6 +997,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
 
             @Override
             public void onDenied() {
+                endToUpload();
                 showOpenAppSettingDialog();
             }
         }).request();
@@ -1138,7 +1139,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     private File mPicDir = new File(PathUtils.getExternalPicturesPath(), PIC_DIR_NAME); //图片统一保存在系统的图片文件夹中
 
     private void showVideoDownloadListDialog(final FragmentActivity activity, final String downloadUrl, final String fileName) {
-        new ListDialog.Builder(getWActivity()).setOnItemClickListener( new ListDialog.OnItemClickListener() {
+        new ListDialog.Builder(getWActivity()).setOnItemClickListener(new ListDialog.OnItemClickListener() {
             @Override
             public void onClick(int position) {
                 if (position == 1) {
@@ -1381,15 +1382,27 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             }
 
             if (!TextUtils.isEmpty(path)) {
-                result = getFileContentUri(getWActivity(), path);
+                if (isContent(path)) {
+                    result = Uri.parse(path);
+                } else {
+                    result = Uri.fromFile(new File(path));
+                }
             }
 
         }
-
         endToUpload();
         isChoose = false;
     }
 
+    public static boolean isContent(String path) {
+        try {
+            if (path.startsWith("content:")) {
+                return true;
+            }
+        } catch (NullPointerException e) {
+        }
+        return false;
+    }
 
     /*-------------EChat----------------*/
     private String chatStatus = "unKnown";

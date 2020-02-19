@@ -103,7 +103,7 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
 
 
-//    implementation 'com.echatsoft.jsapp:chatlib:1.0.2-professional'
+//    implementation 'com.echatsoft.jsapp:chatlibx:1.0.2-professional'
     implementation project(':chatlib')
 
 

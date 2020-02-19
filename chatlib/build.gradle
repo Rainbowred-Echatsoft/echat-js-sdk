@@ -1,10 +1,9 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'maven'
 
 android {
     compileSdkVersion 29
-
-
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 29
@@ -68,6 +67,18 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+}
+
+//本地
+group = 'com.echatsoft.jsapp'
+version = android.defaultConfig.versionName
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri('file:///Users/xuhaoyang/echat/repo/sdk/')) //定义本地maven仓库的地址
+            pom.artifactId = "chatlibx"
+        }
+    }
 }
 
 publish {

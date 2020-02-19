@@ -52,19 +52,19 @@ dependencies {
     api 'com.github.maning0303:MNProgressHUD:V1.1.8'
 
     //图库
-    api 'com.echatsoft.echatsdk:imagepicker:1.0.1-beta4'//支持Android 10
+    api 'com.echatsoft.echatsdk:imagepicker:1.0.1-beta5'//支持Android 10
     // 微信拍照
-    api 'com.echatsoft.echatsdk:cameralibrary:1.0.0-beta6'
+    api 'com.echatsoft.echatsdk:cameralibrary:1.0.0-beta9'
     // 网络请求库
     compileOnly 'com.squareup.okhttp3:okhttp:3.12.1'
 
 
     api 'com.echatsoft.echatsdk:videoplayer:1.0.0-beta3'
-    api 'tv.danmaku.ijk.media:ijkplayer-java:0.8.4'
-    api 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.4'
-    api 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.4'
-    api 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.4'
-    api 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.4'
+    api 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
+    api 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'
+    api 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.8'
+    api 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.8'
+    api 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.8'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

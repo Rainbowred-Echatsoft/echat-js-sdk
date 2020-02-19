@@ -3,6 +3,7 @@ package com.github.echat.chat.otherui;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,7 +17,8 @@ import com.echat.cameralibrary.JCameraView;
 import com.echat.cameralibrary.listener.ClickListener;
 import com.echat.cameralibrary.listener.ErrorListener;
 import com.echat.cameralibrary.listener.JCameraListener;
-import com.echat.cameralibrary.util.FileUtil;
+import com.echat.cameralibrary.listener.PathHandleListener;
+import com.echat.cameralibrary.util.FileUtils;
 import com.github.echat.chat.R;
 
 import java.io.File;
@@ -45,16 +47,19 @@ public class CameraActivity extends AppCompatActivity {
         jCameraView = findViewById(R.id.jcameraview);
 
         //设置视频保存路径
-        String path;
-        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            path = PathUtils.getInternalAppCachePath();
-        } else {
+        jCameraView.setSavePathHandle(new PathHandleListener() {
+            @Override
+            public String lowVersion() {
+                String storagePath = FileUtils.getStoragePath();
+                String videoPath = storagePath + File.separator + "video_" + System.currentTimeMillis() + ".mp4";
+                return videoPath;
+            }
 
-            path = PathUtils.getExternalDcimPath();
-        }
-
-        path = path + File.separator + "EChat";
-        jCameraView.setSaveVideoPath(path);
+            @Override
+            public Uri highVersion() {
+                return FileUtils.makeHighVideoFileUri(getBaseContext(), "video_" + System.currentTimeMillis() + ".mp4");
+            }
+        });
         jCameraView.setFeatures(JCameraView.BUTTON_STATE_BOTH);
         jCameraView.setTip("轻触拍照，长按摄像");
 
@@ -77,7 +82,7 @@ public class CameraActivity extends AppCompatActivity {
             @Override
             public void captureSuccess(Bitmap bitmap) {
                 //获取图片bitmap
-                String path = FileUtil.saveBitmap(getBaseContext(), "JCamera", bitmap);
+                String path = FileUtils.saveBitmap(getBaseContext(), "EChat", bitmap);
                 Intent intent = new Intent();
                 intent.putExtra(EXTRA_RESULT_PIC_PATH, path);
                 setResult(RESULT_CODE_PICTURE, intent);
@@ -87,7 +92,7 @@ public class CameraActivity extends AppCompatActivity {
             @Override
             public void recordSuccess(String url, Bitmap firstFrame) {
                 //获取视频路径
-                String path = FileUtil.saveBitmap(getBaseContext(), "JCamera", firstFrame);
+                String path = FileUtils.saveBitmap(getBaseContext(), "EChat", firstFrame);
                 Intent intent = new Intent();
                 intent.putExtra(EXTRA_RESULT_PIC_PATH, path);
                 intent.putExtra(EXTRA_RESULT_VIDEO_PATH, url);

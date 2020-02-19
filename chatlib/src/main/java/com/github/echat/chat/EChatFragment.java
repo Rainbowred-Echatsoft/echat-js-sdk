@@ -993,6 +993,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
 
             @Override
             public void onDenied() {
+                endToUpload();
                 showOpenAppSettingDialog();
             }
         }).request();
@@ -1377,15 +1378,27 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             }
 
             if (!TextUtils.isEmpty(path)) {
-                result = getFileContentUri(getWActivity(), path);
+                if (isContent(path)) {
+                    result = Uri.parse(path);
+                } else {
+                    result = Uri.fromFile(new File(path));
+                }
             }
 
         }
-
         endToUpload();
         isChoose = false;
     }
 
+    public static boolean isContent(String path) {
+        try {
+            if (path.startsWith("content:")) {
+                return true;
+            }
+        } catch (NullPointerException e) {
+        }
+        return false;
+    }
 
     /*-------------EChat----------------*/
     private String chatStatus = "unKnown";

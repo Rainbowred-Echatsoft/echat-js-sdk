@@ -9,7 +9,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 29
         versionCode 1
-        versionName "1.0.0.16"
+        versionName "1.0.0.17x"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField "String", "XIAOMI_PUSH_ID", "\"\""

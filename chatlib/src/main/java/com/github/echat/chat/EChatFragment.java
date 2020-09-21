@@ -138,6 +138,10 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     private MenuItem endChat;
     private WebView mWebView;
     private boolean dontStopJavascript;//处理上次异常关闭 或 无需暂停webview标记
+
+    //Activity/Fragment webviiew因内存不足等原因销毁前 正在处理选择多媒体文件进行上传
+    private boolean uploadedBeforeDestory;
+
     private DownloadCompleteReceiver downloadCompleteReceiver;
     private boolean destroyView = false;
 
@@ -287,7 +291,8 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     private void initBaseUI(Bundle savedInstanceState) {
         //意外销毁 恢复
         if (savedInstanceState != null) {
-            dontStopJavascript = savedInstanceState.getBoolean("Uploading");
+            uploadedBeforeDestory = savedInstanceState.getBoolean("Uploading");
+            LogUtils.iTag("DEBUG", "initBaseUI", "uploadedBeforeDestory:" + uploadedBeforeDestory);
         }
 
         toolbar = mContentView.findViewById(R.id.toolbar);
@@ -502,7 +507,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     public DownloadListener downloadListener = new DownloadListener() {
         @Override
         public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimetype, long contentLength) {
-            LogUtils.wTag(TAG, String.format("有个文件要下载%s,%s,%s,%s,%s", url, userAgent, contentDisposition, mimetype, String.valueOf(contentLength)));
+            LogUtils.wTag(TAG, String.format("有个文件要下载%s,%s,%s,%s,%s", url, userAgent, contentDisposition, mimetype, contentLength));
             //建议做法
             //1、检查当前网络状态
             //2、如果未联网，请勿调用系统下载，系统下载是一个队列，如果系统认为当前没有网络，会把任务放在队列中，当有网络时，会把队列中的都下载一遍
@@ -807,7 +812,9 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
     }
 
     public void onPageFinished(WebView view, String url) {
-        if (dontStopJavascript) {
+        ToastUtils.showShort("onPageFinished");
+        if (uploadedBeforeDestory) {
+            LogUtils.iTag("DEBUG", "triggerFile", "uploadedBeforeDestory:" + uploadedBeforeDestory);
             JSONObject jsonObject = new JSONObject();
             try {
                 jsonObject.put("functionName", "triggerFile");
@@ -931,6 +938,10 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
 
 
     public void openCameraOrGallery() {
+        if (uploadedBeforeDestory) {
+            endToUpload();
+            return;
+        }
         View root = View.inflate(getWActivity(), R.layout.layout_choose_echat, null);
         final BottomSheetDialog bottomSheetDialog = showBottomSheetDialog(root, new DialogInterface.OnDismissListener() {
             @Override
@@ -1059,6 +1070,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
      * 否者会出现Webview卡死，无法再次上传等问题
      */
     private void endToUpload() {
+        LogUtils.iTag("DEBUG", "endToUpload", "uploadedBeforeDestory:" + uploadedBeforeDestory);
         //system < Android 5.0
         if (mUploadMessage != null) {
             if (result == null) {
@@ -1082,6 +1094,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             result = null;
             results.clear();
         }
+        uploadedBeforeDestory = false;//clear
     }
 
     /**
@@ -1345,22 +1358,11 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         super.onActivityResult(requestCode, resultCode, intent);
         dontStopJavascript = false;
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
-            /**
-             * 处理回调对象为空的时候
-             */
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                if (mUploadMessageL == null) return;
-            } else {
-                if (mUploadMessage == null) return;
-            }
-
             final List<Uri> uris = Matisse.obtainResult(intent);
-
             if (!uris.isEmpty()) {
                 // system < Android 5.0 only support one file upload
                 results.addAll(uris);
             }
-
 
         } else if (requestCode == CameraActivity.REQUEST_CODE_CUSTOM_CAMERA) {
             String path = null;
@@ -1386,7 +1388,10 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             }
 
         }
-        endToUpload();
+        if (!uploadedBeforeDestory) {
+            //销毁之前没有上传过程 就直接调用
+            endToUpload();
+        }
         isChoose = false;
     }
 

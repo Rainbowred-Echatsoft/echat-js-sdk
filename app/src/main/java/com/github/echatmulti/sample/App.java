@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.BottomSheetDialog;
@@ -49,11 +48,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 import static com.github.echatmulti.sample.utils.Constants.ACTION_DEVICE_TOKEN;
 import static com.github.echatmulti.sample.utils.Constants.APPID;
 import static com.github.echatmulti.sample.utils.Constants.APPID_DEFAULT;
-import static com.github.echatmulti.sample.utils.Constants.COMPANY_ID;
 import static com.github.echatmulti.sample.utils.Constants.DEVICE_TOKEN_FUN;
 import static com.github.echatmulti.sample.utils.Constants.METADATA_ONLY_UID;
 import static com.github.echatmulti.sample.utils.Constants.TOKEN;
@@ -194,7 +191,7 @@ public class App extends Application {
                 .setSingleTagSwitch(false)// 一条日志仅输出一条，默认开，为美化 AS 3.1 的 Logcat
                 .setDir(logfile)// 当自定义路径为空时，写入应用的/cache/log/目录中
                 .setBorderSwitch(false)// 输出日志是否带边框开关，默认开
-                .setStackDeep(4)//log 栈深度，默认为 1
+                .setStackDeep(1)//log 栈深度，默认为 1
                 .setConsoleFilter(LogUtils.V)// log的控制台过滤器，和logcat过滤器同理，默认Verbose
                 .setFileFilter(LogUtils.V)// log文件过滤器，和logcat过滤器同理，默认Verbose
                 // 新增 ArrayList 格式化器，默认已支持 Array, Throwable, Bundle, Intent 的格式化输出

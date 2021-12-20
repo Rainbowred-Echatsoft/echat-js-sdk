@@ -22,10 +22,12 @@ allprojects {
             url 'https://maven.echatsoft.com/echat/app/sdk'
         }
         google()
+        mavenCentral()
         jcenter()
-        maven { url "https://jitpack.io" }
-        maven { url 'https://dl.bintray.com/umsdk/release' }
-        maven { url 'https://dl.bintray.com/echat/maven' }
+        maven{
+            url 'https://maven.aliyun.com/repository/jcenter'
+        }
+        maven { url 'https://jitpack.io' }
 
     }
 }

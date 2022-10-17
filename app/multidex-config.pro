@@ -1,0 +1,8 @@
+-keep class androidx.multidex.** {*;}
+-keep class android.support.v4.** {*;}
+-keep class android.support.v7.** {*;}
+-keep class **.R$* { *; }
+-keep class a.** {*;}
+-keep class com.umeng.** { *; }
+-keep class com.uc.** { *; }
+-keep class com.efs.** { *; }

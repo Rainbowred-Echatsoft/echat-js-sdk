@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.multidex.MultiDex;
 import android.text.Html;
 import android.text.TextUtils;
 import android.view.View;
@@ -62,9 +63,10 @@ public class App extends Application {
 
     public static Handler handler;
 
-    // TODO: 2019-11-22 handler go to get
-    private class Runhandler extends Handler {
-
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 
     @Override

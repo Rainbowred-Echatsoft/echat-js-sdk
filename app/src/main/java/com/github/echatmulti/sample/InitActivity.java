@@ -88,7 +88,7 @@ public class InitActivity extends AppCompatActivity {
 
             alertNotNetwork();
         } else {
-            checkDeviceToken(0);
+            checkDeviceToken(5000);
         }
 
     }

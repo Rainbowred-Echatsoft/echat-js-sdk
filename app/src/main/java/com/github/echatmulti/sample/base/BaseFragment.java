@@ -21,12 +21,12 @@ import java.lang.ref.WeakReference;
 public abstract class BaseFragment extends Fragment
         implements IBaseView {
 
-    private static final String TAG = "BaseFragment";
+    private static final String TAG                  = "BaseFragment";
     private static final String STATE_SAVE_IS_HIDDEN = "STATE_SAVE_IS_HIDDEN";
 
-    private WeakReference<Activity> mActivityWeakReference;
-    protected LayoutInflater mInflater;
-    protected View mContentView;
+    private   WeakReference<Activity> mActivityWeakReference;
+    protected LayoutInflater          mInflater;
+    protected View                    mContentView;
 
     @Override
     public void onAttach(Context context) {
@@ -43,8 +43,8 @@ public abstract class BaseFragment extends Fragment
         Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            boolean isSupportHidden = savedInstanceState.getBoolean(STATE_SAVE_IS_HIDDEN);
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            boolean             isSupportHidden = savedInstanceState.getBoolean(STATE_SAVE_IS_HIDDEN);
+            FragmentTransaction ft              = getFragmentManager().beginTransaction();
             if (isSupportHidden) {
                 ft.hide(this);
             } else {
@@ -89,7 +89,7 @@ public abstract class BaseFragment extends Fragment
     @Override
     public void onDestroyView() {
         Log.d(TAG, "onDestroyView: ");
-        if (mContentView != null) {
+        if (mContentView != null && mContentView.getParent() != null) {
             ((ViewGroup) mContentView.getParent()).removeView(mContentView);
         }
         super.onDestroyView();

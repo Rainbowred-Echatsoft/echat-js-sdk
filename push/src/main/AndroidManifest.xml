@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.echatsoft.echatsdk.push">
+
+    <uses-sdk tools:overrideLibrary="com.huawei.hms.framework.common,
+            com.huawei.hms.framework.network.grs,
+            com.huawei.hmf.tasks,
+            com.huawei.agconnect.core,
+            com.huawei.hms.log,
+            com.huawei.hms.base.device,
+            com.huawei.hms.base.ui,
+            com.huawei.hms.stats,
+            com.huawei.hms.base.availableupdate,
+            com.huawei.android.hms.base,
+            com.huawei.android.hms.openid,
+            org.android.agoo.oppo,
+            com.vivo.push,
+            org.android.agoo.vivo,
+            org.android.agoo.meizu,
+            com.huawei.android.hms.push,
+            org.android.agoo.huawei,
+            com.pushsdk,
+            com.huawei.hms.hatool,
+            com.huawei.hms.framework.network.frameworkcompat" />
+
+    <application >
+
+        <!-- 厂商通道 Android 12 兼容 Start -->
+        <service
+            android:name="com.heytap.msp.push.service.DataMessageCallbackService"
+            android:exported="true" />
+        <service
+            android:name="com.heytap.msp.push.service.CompatibleDataMessageCallbackService"
+            android:exported="true" />
+        <service
+            android:name="com.xiaomi.mipush.sdk.MessageHandleService"
+            android:exported="false" />
+        <service
+            android:name="com.xiaomi.push.service.XMPushService"
+            android:exported="false" />
+
+        <receiver
+            android:name="org.android.agoo.vivo.PushMessageReceiverImpl"
+            android:exported="true" />
+        <!-- 厂商通道 Android 12 兼容 End -->
+
+    </application>
+</manifest>

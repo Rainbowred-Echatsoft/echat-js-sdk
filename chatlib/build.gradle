@@ -1,6 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 29
@@ -69,23 +68,26 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
 }
 
-//本地
-group = 'com.echatsoft.jsapp'
-version = android.defaultConfig.versionName
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            repository(url: uri('file:///Users/xuhaoyang/echat/repo/sdk/')) //定义本地maven仓库的地址
-            pom.artifactId = "chatlibx"
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "source"
+}
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = "com.echatsoft.jsapp"
+                artifactId = "chatlibx"
+                version = android.defaultConfig.versionName
+                artifact sourceJar
+            }
+        }
+        repositories {
+            maven {
+                // change to point to your repo, e.g. http://my.org/repo
+                url = uri('file:///Users/xuhaoyang/echat/repo/sdk/')
+            }
         }
     }
-}
-
-publish {
-    userOrg = 'echat'
-    groupId = 'com.echatsoft.jsapp'
-    artifactId = 'chatlib'
-    publishVersion = android.defaultConfig.versionName 
-    desc = 'i am jsapp chat library'
-    website = 'https://gitee.com/rainbowred/js-app-android-professional-demo'
 }

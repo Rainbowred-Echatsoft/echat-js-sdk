@@ -31,3 +31,9 @@
 #-keep class org.eclipse.** { *; }#ws用
 #-keep class com.googlecode.** { *; }
 #-keep class org.apache.** { *; }
+
+-keep class **.R$* { *; }
+-keep class a.** {*;}
+-keep class com.umeng.** { *; }
+-keep class com.uc.** { *; }
+-keep class com.efs.** { *; }

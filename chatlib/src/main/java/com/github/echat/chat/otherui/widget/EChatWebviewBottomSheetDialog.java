@@ -175,8 +175,6 @@ public class EChatWebviewBottomSheetDialog extends EChatBottomSheetDialog {
             if (url != null) {
                 if (url.toString().startsWith("http")) {
                     view.loadUrl(url.toString());
-                } else {
-                    return false;
                 }
             }
             return true;
@@ -186,10 +184,8 @@ public class EChatWebviewBottomSheetDialog extends EChatBottomSheetDialog {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if (url.startsWith("http")) {
                 view.loadUrl(url);
-                return true;
-            } else {
-                return false;
             }
+            return true;
         }
 
         @Override

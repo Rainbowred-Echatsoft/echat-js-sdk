@@ -215,7 +215,7 @@ public class App extends Application {
 
 
     private void initUpush() {
-
+        //必须上架才可以使用小米推送
         MiPushRegistar.register(this, BuildConfig.XIAOMI_PUSH_ID, BuildConfig.XIAOMI_PUSH_KEY);
 
         HuaWeiRegister.register(this);

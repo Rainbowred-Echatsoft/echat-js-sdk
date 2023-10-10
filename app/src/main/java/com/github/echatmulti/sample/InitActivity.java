@@ -26,15 +26,15 @@ import static com.github.echatmulti.sample.utils.Constants.HANDLER_WHAT_BACK;
 
 public class InitActivity extends AppCompatActivity {
 
-    private boolean firstBoot;
-    private AlertDialog.Builder dialogBuilder;
+    private boolean               firstBoot;
+    private AlertDialog.Builder   dialogBuilder;
     private NetworkChangeReceiver mNetworkChangeReceive = new NetworkChangeReceiver(new DefaultCallback() {
         @Override
         public void doSomething() {
             connected = NetworkUtils.isConnected();
         }
     });
-    private DeviceTokenReceiver deviceTokenReceiver = new DeviceTokenReceiver();
+    private DeviceTokenReceiver   deviceTokenReceiver   = new DeviceTokenReceiver();
 
     class DeviceTokenReceiver extends BroadcastReceiver {
         private static final String TAG = "DeviceTokenReceiver";
@@ -58,14 +58,14 @@ public class InitActivity extends AppCompatActivity {
     };
 
     private boolean backExit;//退出APP
-    private String deviceToken;
+    private String  deviceToken;
     private boolean connected;//网络是否连接
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        IntentFilter mFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        IntentFilter mFilter  = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         IntentFilter dtFilter = new IntentFilter(ACTION_DEVICE_TOKEN);
         registerReceiver(mNetworkChangeReceive, mFilter);
         registerReceiver(deviceTokenReceiver, dtFilter);
@@ -96,10 +96,11 @@ public class InitActivity extends AppCompatActivity {
         App.handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                deviceToken = SPUtils.getInstance().getString(DEVICE_TOKEN_FUN, "");
                 //5s后还没获得devicetoken
                 if (TextUtils.isEmpty(deviceToken)) {
                     //没有Device token
-                    showCustomDialog("缺少关键数据", "缺少关键数据，请重试", "重新检测", "退出", new DialogCallback() {
+                    showCustomDialog("缺少关键数据", "缺少关键数据，请重试", "重新检测", "退出", "跳过(无远程推送)", new DialogCallback() {
                         @Override
                         public void yes() {
                             if (TextUtils.isEmpty(deviceToken)) {
@@ -111,6 +112,11 @@ public class InitActivity extends AppCompatActivity {
                         public void no() {
                             finish();
                             System.exit(0);
+                        }
+
+                        @Override
+                        public void skip() {
+                            goMain();
                         }
                     });
                 } else {
@@ -128,22 +134,31 @@ public class InitActivity extends AppCompatActivity {
     }
 
     private void alertNotNetwork() {
-        showCustomDialog("无网络", "请连接网络，否者无法进行必要的初始化数据", "重试", "退出", new DialogCallback() {
-            @Override
-            public void yes() {
-                if (!connected) {
-                    alertNotNetwork();
-                } else {
-                    checkDeviceToken(5000);
-                }
-            }
+        showCustomDialog("无网络",
+                "请连接网络，否者无法进行必要的初始化数据",
+                "重试",
+                "退出",
+                "跳过(无远程推送)", new DialogCallback() {
+                    @Override
+                    public void yes() {
+                        if (!connected) {
+                            alertNotNetwork();
+                        } else {
+                            checkDeviceToken(5000);
+                        }
+                    }
 
-            @Override
-            public void no() {
-                finish();
-                System.exit(0);
-            }
-        });
+                    @Override
+                    public void no() {
+                        finish();
+                        System.exit(0);
+                    }
+
+                    @Override
+                    public void skip() {
+                        goMain();
+                    }
+                });
     }
 
     @Override
@@ -157,24 +172,32 @@ public class InitActivity extends AppCompatActivity {
         void yes();
 
         void no();
+
+        void skip();
     }
 
-    private void showCustomDialog(String title, String content, String positive, String negative, DialogCallback callback) {
+    private void showCustomDialog(String title, String content, String positive, String negative, String neutral, DialogCallback callback) {
         dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder.setTitle(title)
                 .setMessage(content)
+                .setNeutralButton(neutral, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (callback != null) callback.skip();
+                    }
+                })
                 .setPositiveButton(positive, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (callback != null) callback.yes();
                     }
-                }).setNegativeButton(negative, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (callback != null) callback.no();
-
-            }
-        }).setCancelable(false)
+                })
+                .setNegativeButton(negative, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (callback != null) callback.no();
+                    }
+                }).setCancelable(false)
                 .show();
     }
 

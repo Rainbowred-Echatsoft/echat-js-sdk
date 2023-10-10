@@ -28,7 +28,7 @@ import com.github.echatmulti.sample.ui.SpecialTab;
 import com.github.echatmulti.sample.ui.SpecialTabRound;
 import com.github.echatmulti.sample.utils.DataViewModel;
 import com.github.echatmulti.sample.utils.RemoteNotificationUtils;
-import com.gyf.barlibrary.ImmersionBar;
+import com.gyf.immersionbar.ImmersionBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
     Toolbar toolbar;
 
     int[] testColors = {0xFF455A64, 0xFF00796B, 0xFF795548, 0xFF5B4947, 0xFFF57C00};
-    private MenuItem notificationItem;
-    private MainViewPagerAdpater adapter;
+    private MenuItem             notificationItem;
+    private MainViewPagerAdapter adapter;
 
 
     @Override
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 .addItem(newItem(R.mipmap.ic_settings_default, R.mipmap.ic_settings_selected, "设置"))
                 .build();
 
-        adapter = new MainViewPagerAdpater(getSupportFragmentManager(), mNavigationController.getItemCount());
+        adapter = new MainViewPagerAdapter(getSupportFragmentManager(), mNavigationController.getItemCount());
         viewPager.setAdapter(adapter);
 
         //自动适配ViewPager页面切换
@@ -251,12 +251,12 @@ public class MainActivity extends AppCompatActivity {
         return mainTab;
     }
 
-    class MainViewPagerAdpater extends FragmentPagerAdapter {
+    class MainViewPagerAdapter extends FragmentPagerAdapter {
 
         private int size;
         private List<Fragment> mFragments;
 
-        public MainViewPagerAdpater(FragmentManager fm, int size) {
+        public MainViewPagerAdapter(FragmentManager fm, int size) {
             super(fm);
             this.size = size;
             mFragments = new ArrayList<>();

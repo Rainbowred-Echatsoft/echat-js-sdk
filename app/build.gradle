@@ -108,7 +108,8 @@ dependencies {
 
 
     implementation 'me.majiajie:pager-bottom-tab-strip:2.3.0'
-    implementation 'com.gyf.immersionbar:immersionbar:2.3.3'
+//    implementation 'com.gyf.immersionbar:immersionbar:2.3.3'
+    implementation "com.geyifeng.immersionbar:immersionbar:3.2.2"
 
 
     // 二维码扫描

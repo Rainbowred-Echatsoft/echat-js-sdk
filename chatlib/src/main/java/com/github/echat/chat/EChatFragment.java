@@ -32,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import com.blankj.utilcode.util.UtilsTransActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import androidx.fragment.app.Fragment;
@@ -377,7 +378,7 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         /**
          * 安全销毁回收Fragment资源
          */
-        if (mContentView != null) {
+        if (mContentView != null && mContentView.getParent() != null) {
             ((ViewGroup) mContentView.getParent()).removeView(mContentView);
         }
 
@@ -523,8 +524,8 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                 PermissionUtils.permission(PermissionConstants.STORAGE)
                         .rationale(new PermissionUtils.OnRationaleListener() {
                             @Override
-                            public void rationale(ShouldRequest shouldRequest) {
-                                showRationaleDialog(shouldRequest, getWActivity());
+                            public void rationale(@NonNull UtilsTransActivity activity, @NonNull ShouldRequest shouldRequest) {
+                                showRationaleDialog(shouldRequest, activity);
                             }
                         }).callback(new PermissionUtils.SimpleCallback() {
                     @Override
@@ -996,8 +997,8 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
         PermissionUtils.permission(PermissionConstants.STORAGE, PermissionConstants.CAMERA, PermissionConstants.MICROPHONE)
                 .rationale(new PermissionUtils.OnRationaleListener() {
                     @Override
-                    public void rationale(ShouldRequest shouldRequest) {
-                        showRationaleDialog(shouldRequest, getWActivity());
+                    public void rationale(@NonNull UtilsTransActivity activity, @NonNull ShouldRequest shouldRequest) {
+                        showRationaleDialog(shouldRequest, activity);
                     }
                 }).callback(new PermissionUtils.SimpleCallback() {
             @Override
@@ -1047,8 +1048,8 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
             PermissionUtils.permission(PermissionConstants.STORAGE, PermissionConstants.CAMERA)
                     .rationale(new PermissionUtils.OnRationaleListener() {
                         @Override
-                        public void rationale(ShouldRequest shouldRequest) {
-                            showRationaleDialog(shouldRequest, getWActivity());
+                        public void rationale(@NonNull UtilsTransActivity activity, @NonNull ShouldRequest shouldRequest) {
+                            showRationaleDialog(shouldRequest, activity);
                         }
                     }).callback(new PermissionUtils.SimpleCallback() {
                 @Override
@@ -1161,8 +1162,8 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                     PermissionUtils.permission(PermissionConstants.STORAGE)
                             .rationale(new PermissionUtils.OnRationaleListener() {
                                 @Override
-                                public void rationale(ShouldRequest shouldRequest) {
-                                    showRationaleDialog(shouldRequest, getWActivity());
+                                public void rationale(@NonNull UtilsTransActivity activity, @NonNull ShouldRequest shouldRequest) {
+                                    showRationaleDialog(shouldRequest, activity);
                                 }
                             }).callback(new PermissionUtils.SimpleCallback() {
                         @Override
@@ -1191,8 +1192,8 @@ public class EChatFragment extends Fragment implements Toolbar.OnMenuItemClickLi
                     PermissionUtils.permission(PermissionConstants.STORAGE)
                             .rationale(new PermissionUtils.OnRationaleListener() {
                                 @Override
-                                public void rationale(ShouldRequest shouldRequest) {
-                                    showRationaleDialog(shouldRequest, getWActivity());
+                                public void rationale(@NonNull UtilsTransActivity activity, @NonNull ShouldRequest shouldRequest) {
+                                    showRationaleDialog(shouldRequest, activity);
                                 }
                             }).callback(new PermissionUtils.SimpleCallback() {
                         @Override

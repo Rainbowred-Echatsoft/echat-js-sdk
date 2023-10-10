@@ -18,6 +18,7 @@ import com.blankj.utilcode.util.FragmentUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.blankj.utilcode.util.UtilsTransActivity;
 import com.github.echatmulti.sample.base.BaseLazyFragment;
 import com.github.echatmulti.sample.utils.Constants;
 import com.github.echatmulti.sample.utils.DataViewModel;
@@ -125,7 +126,7 @@ public class SettingFragment extends BaseLazyFragment implements FragmentUtils.O
             PermissionUtils.permission(PermissionConstants.CAMERA, PermissionConstants.STORAGE)
                     .rationale(new PermissionUtils.OnRationaleListener() {
                         @Override
-                        public void rationale(ShouldRequest shouldRequest) {
+                        public void rationale(@NonNull UtilsTransActivity activity, @NonNull ShouldRequest shouldRequest) {
                             new AlertDialog.Builder(getContext())
                                     .setTitle(android.R.string.dialog_alert_title)
                                     .setMessage(com.github.echat.chat.R.string.permission_rationale_message)
@@ -230,9 +231,7 @@ public class SettingFragment extends BaseLazyFragment implements FragmentUtils.O
                         edEchatTag1.setText(echatTag1);
                         edEchatTag2.setText(echatTag2);
                         edRouteEntranceId.setText(routeEntranceId);
-                        ToastUtils.setGravity(Gravity.CENTER, 0, 0);
                         ToastUtils.showLong("修改成功");
-
                     } catch (JSONException e) {
                         ToastUtils.showShort("二维码格式不准确");
                     }

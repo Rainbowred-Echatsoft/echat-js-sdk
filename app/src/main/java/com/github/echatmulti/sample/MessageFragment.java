@@ -17,18 +17,18 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.FragmentUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SPUtils;
-import com.github.echat.chat.EChatActivity;
-import com.github.echat.chat.utils.EChatUtils;
+import com.echatsoft.echatsdk.chat.EChatActivity;
+import com.echatsoft.echatsdk.chat.utils.EChatUtils;
 import com.github.echatmulti.sample.base.BaseLazyFragment;
 import com.github.echatmulti.sample.utils.DataViewModel;
 import com.github.echatmulti.sample.utils.RemoteNotificationUtils;
 
-import static com.github.echat.chat.utils.Constants.ACTION_LOCAL_UNREAD_COUNT;
-import static com.github.echat.chat.utils.Constants.ACTION_REMOTE_UNREAD_COUNT;
-import static com.github.echat.chat.utils.Constants.ACTION_UPDATE_LAST_CONTENT;
-import static com.github.echat.chat.utils.Constants.CHAT_LOCAL_UNREAD_COUNT;
-import static com.github.echat.chat.utils.Constants.CHAT_REMOTE_UNREAD_COUNT;
-import static com.github.echat.chat.utils.Constants.NOTIFICATION_LAST_CONTENT;
+import static com.echatsoft.echatsdk.chat.utils.Constants.ACTION_LOCAL_UNREAD_COUNT;
+import static com.echatsoft.echatsdk.chat.utils.Constants.ACTION_REMOTE_UNREAD_COUNT;
+import static com.echatsoft.echatsdk.chat.utils.Constants.ACTION_UPDATE_LAST_CONTENT;
+import static com.echatsoft.echatsdk.chat.utils.Constants.CHAT_LOCAL_UNREAD_COUNT;
+import static com.echatsoft.echatsdk.chat.utils.Constants.CHAT_REMOTE_UNREAD_COUNT;
+import static com.echatsoft.echatsdk.chat.utils.Constants.NOTIFICATION_LAST_CONTENT;
 import static com.github.echatmulti.sample.utils.Constants.STATUSBAR_COLOR;
 
 /**

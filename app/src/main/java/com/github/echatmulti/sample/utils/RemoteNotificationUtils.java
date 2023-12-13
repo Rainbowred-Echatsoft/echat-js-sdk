@@ -18,15 +18,15 @@ import androidx.core.app.NotificationManagerCompat;
 import android.text.TextUtils;
 
 import com.blankj.utilcode.util.ImageUtils;
-import com.github.echat.chat.EChatActivity;
+import com.echatsoft.echatsdk.chat.EChatActivity;
 import com.github.echatmulti.sample.MainActivity;
 import com.github.echatmulti.sample.R;
 
 import java.util.Map;
 
-import static com.github.echat.chat.utils.Constants.EXTRA_CHAT_URL;
-import static com.github.echat.chat.utils.Constants.EXTRA_COMPANY_ID;
-import static com.github.echat.chat.utils.Constants.EXTRA_NOTIFY;
+import static com.echatsoft.echatsdk.chat.utils.Constants.EXTRA_CHAT_URL;
+import static com.echatsoft.echatsdk.chat.utils.Constants.EXTRA_COMPANY_ID;
+import static com.echatsoft.echatsdk.chat.utils.Constants.EXTRA_NOTIFY;
 
 /**
  * @Author: xuhaoyang

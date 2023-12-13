@@ -77,7 +77,7 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                groupId = "com.echatsoft.jsapp"
+                groupId = "com.echatsoft.echatsdk"
                 artifactId = "chatlibx"
                 version = android.defaultConfig.versionName
                 artifact sourceJar

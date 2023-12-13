@@ -67,7 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.github.echat.chat.otherui.widget.EChatCustomWebview
+        <com.echatsoft.echatsdk.chat.otherui.widget.EChatCustomWebview
             android:id="@+id/webview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -11,7 +11,7 @@ import android.widget.ImageView;
 
 import com.blankj.utilcode.util.FragmentUtils;
 import com.bumptech.glide.Glide;
-import com.github.echat.chat.EChatActivity;
+import com.echatsoft.echatsdk.chat.EChatActivity;
 import com.github.echatmulti.sample.base.BaseLazyFragment;
 import com.github.echatmulti.sample.utils.DataViewModel;
 import com.github.echatmulti.sample.utils.RemoteNotificationUtils;

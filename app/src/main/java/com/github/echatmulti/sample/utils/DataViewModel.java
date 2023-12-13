@@ -8,7 +8,7 @@ import android.text.TextUtils;
 import com.blankj.utilcode.util.EncodeUtils;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SPUtils;
-import com.github.echat.chat.utils.EChatUtils;
+import com.echatsoft.echatsdk.chat.utils.EChatUtils;
 
 import java.util.HashMap;
 import java.util.Map;

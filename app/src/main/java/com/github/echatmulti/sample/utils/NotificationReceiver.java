@@ -6,17 +6,17 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.blankj.utilcode.util.LogUtils;
-import com.github.echat.chat.utils.Constants;
-import com.github.echat.chat.utils.EChatUtils;
+import com.echatsoft.echatsdk.chat.utils.Constants;
+import com.echatsoft.echatsdk.chat.utils.EChatUtils;
 
 import java.util.HashMap;
 import java.util.List;
 
-import static com.github.echat.chat.utils.Constants.ACTION_REMOTE_UNREAD_COUNT;
-import static com.github.echat.chat.utils.Constants.CHAT_LOCAL_UNREAD_COUNT;
-import static com.github.echat.chat.utils.Constants.EXTRA_CHAT_URL;
-import static com.github.echat.chat.utils.Constants.EXTRA_COMPANY_ID;
-import static com.github.echat.chat.utils.Constants.NOTIFICATION_LAST_CHAT_TIME;
+import static com.echatsoft.echatsdk.chat.utils.Constants.ACTION_REMOTE_UNREAD_COUNT;
+import static com.echatsoft.echatsdk.chat.utils.Constants.CHAT_LOCAL_UNREAD_COUNT;
+import static com.echatsoft.echatsdk.chat.utils.Constants.EXTRA_CHAT_URL;
+import static com.echatsoft.echatsdk.chat.utils.Constants.EXTRA_COMPANY_ID;
+import static com.echatsoft.echatsdk.chat.utils.Constants.NOTIFICATION_LAST_CHAT_TIME;
 
 /**
  * @Author: xhy

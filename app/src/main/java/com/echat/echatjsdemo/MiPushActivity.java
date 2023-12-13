@@ -2,12 +2,10 @@ package com.echat.echatjsdemo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.SPUtils;
-import com.github.echat.chat.EChatActivity;
-import com.github.echat.chat.utils.EChatUtils;
+import com.echatsoft.echatsdk.chat.EChatActivity;
+import com.echatsoft.echatsdk.chat.utils.EChatUtils;
 import com.github.echatmulti.sample.MainActivity;
 import com.umeng.message.UmengNotifyClickActivity;
 
@@ -15,9 +13,9 @@ import org.android.agoo.common.AgooConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.github.echat.chat.utils.Constants.EXTRA_CHAT_URL;
-import static com.github.echat.chat.utils.Constants.EXTRA_COMPANY_ID;
-import static com.github.echat.chat.utils.Constants.EXTRA_NOTIFY;
+import static com.echatsoft.echatsdk.chat.utils.Constants.EXTRA_CHAT_URL;
+import static com.echatsoft.echatsdk.chat.utils.Constants.EXTRA_COMPANY_ID;
+import static com.echatsoft.echatsdk.chat.utils.Constants.EXTRA_NOTIFY;
 
 /**
  * @Author: xuhaoyang

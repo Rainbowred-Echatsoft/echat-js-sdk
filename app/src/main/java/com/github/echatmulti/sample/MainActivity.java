@@ -21,8 +21,8 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.LogUtils;
-import com.github.echat.chat.EChatActivity;
-import com.github.echat.chat.utils.Constants;
+import com.echatsoft.echatsdk.chat.EChatActivity;
+import com.echatsoft.echatsdk.chat.utils.Constants;
 import com.github.echatmulti.sample.ui.MenuItemBadge;
 import com.github.echatmulti.sample.ui.SpecialTab;
 import com.github.echatmulti.sample.ui.SpecialTabRound;
@@ -38,10 +38,10 @@ import me.majiajie.pagerbottomtabstrip.PageNavigationView;
 import me.majiajie.pagerbottomtabstrip.item.BaseTabItem;
 import me.majiajie.pagerbottomtabstrip.listener.OnTabItemSelectedListener;
 
-import static com.github.echat.chat.utils.Constants.ACTION_LOCAL_UNREAD_COUNT;
-import static com.github.echat.chat.utils.Constants.ACTION_REMOTE_UNREAD_COUNT;
-import static com.github.echat.chat.utils.Constants.CHAT_LOCAL_UNREAD_COUNT;
-import static com.github.echat.chat.utils.Constants.CHAT_REMOTE_UNREAD_COUNT;
+import static com.echatsoft.echatsdk.chat.utils.Constants.ACTION_LOCAL_UNREAD_COUNT;
+import static com.echatsoft.echatsdk.chat.utils.Constants.ACTION_REMOTE_UNREAD_COUNT;
+import static com.echatsoft.echatsdk.chat.utils.Constants.CHAT_LOCAL_UNREAD_COUNT;
+import static com.echatsoft.echatsdk.chat.utils.Constants.CHAT_REMOTE_UNREAD_COUNT;
 import static com.github.echatmulti.sample.utils.Constants.STATUSBAR_COLOR;
 
 public class MainActivity extends AppCompatActivity {

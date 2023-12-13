@@ -1,18 +1,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.github.echat.chat">
+    package="com.echatsoft.echatsdk">
 
     <uses-sdk tools:overrideLibrary="tv.danmaku.ijk.media.player_arm64" />
 
     <application>
 
         <activity
-            android:name="com.github.echat.chat.EChatActivity"
+            android:name="com.echatsoft.echatsdk.chat.EChatActivity"
             android:configChanges="orientation|screenSize"
             android:launchMode="singleTop"
             android:theme="@style/EChatTheme.NoActionBar" />
         <activity
-            android:name="com.github.echat.chat.otherui.CameraActivity"
+            android:name="com.echatsoft.echatsdk.chat.otherui.CameraActivity"
             android:theme="@style/EChatTheme.NoActionBar" />
 
         <provider
@@ -28,7 +28,7 @@
         </provider>
 
         <activity
-            android:name=".otherui.BrowserActivity"
+            android:name="com.echatsoft.echatsdk.chat.otherui.BrowserActivity"
             android:launchMode="singleTop"
             android:process=":webview"
             android:screenOrientation="portrait"
@@ -36,7 +36,7 @@
 
 
         <activity
-            android:name=".otherui.WebviewBottomDialogActivity"
+            android:name="com.echatsoft.echatsdk.chat.otherui.WebviewBottomDialogActivity"
             android:launchMode="singleTop"
             android:process=":webview"
             android:theme="@style/EChatTheme.Translucent" />
